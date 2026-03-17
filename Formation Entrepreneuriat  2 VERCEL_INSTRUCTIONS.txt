@@ -1,0 +1,143 @@
+═══════════════════════════════════════════════════════════════════════════
+🚀 METTRE VIVACOEUR IA EN LIGNE AVEC VERCEL (100% GRATUIT)
+═══════════════════════════════════════════════════════════════════════════
+
+DENISE LÉVESQUE | EDMUNDSTON, NB | denise@vivacoeur.com
+
+═══════════════════════════════════════════════════════════════════════════
+⚡ POURQUOI VERCEL?
+═══════════════════════════════════════════════════════════════════════════
+
+✅ 100% GRATUIT (zéro arnaque)
+✅ Plus rapide que GitHub Pages
+✅ Zéro frais cachés
+✅ Support excellent
+✅ Déploiement en 2 clics
+
+═══════════════════════════════════════════════════════════════════════════
+✅ ÉTAPE 1: CRÉE UN COMPTE VERCEL
+═══════════════════════════════════════════════════════════════════════════
+
+1. Va sur: https://vercel.com/signup
+
+2. Clique "Continue with GitHub"
+
+3. Autorise Vercel à accéder à GitHub
+
+4. Tu vas arriver sur le dashboard Vercel
+
+═══════════════════════════════════════════════════════════════════════════
+✅ ÉTAPE 2: CRÉE UN REPOSITORY GITHUB (OU UTILISE CELUI QUE TU AS)
+═══════════════════════════════════════════════════════════════════════════
+
+Si tu n'as pas encore créé le repo GitHub:
+
+1. Va: https://github.com/new
+
+2. Nom: denise-vivacoeur-site
+
+3. Public: ✅
+
+4. Create repository
+
+═══════════════════════════════════════════════════════════════════════════
+✅ ÉTAPE 3: UPLOAD LES FICHIERS SUR GITHUB
+═══════════════════════════════════════════════════════════════════════════
+
+Dans ton repository GitHub:
+
+1. Clique "Add file" > "Upload files"
+
+2. Drag & drop:
+   - index.html
+   - vivacoeur-ia-app.html
+   - ViVaCoeur_IA_Guide_Complet.docx
+   - vivacoeur-ia-deployment.md
+   - README.md
+   - EMAIL_ETUDIANTS.txt
+
+3. Commit changes
+
+═══════════════════════════════════════════════════════════════════════════
+✅ ÉTAPE 4: CONNECTE À VERCEL
+═══════════════════════════════════════════════════════════════════════════
+
+1. Va sur dashboard Vercel: https://vercel.com/dashboard
+
+2. Clique "New Project"
+
+3. Trouve ton repository: denise-vivacoeur-site
+
+4. Clique "Import"
+
+5. Settings:
+   Framework: Other (ou HTML)
+   Root Directory: ./
+   
+6. Clique "Deploy"
+
+✅ BOOM! Ton site est EN LIGNE!
+
+═══════════════════════════════════════════════════════════════════════════
+✅ TON SITE SERA ACCESSIBLE À:
+═══════════════════════════════════════════════════════════════════════════
+
+https://denise-vivacoeur-site.vercel.app/
+
+OU avec ton domaine personnalisé (optionnel):
+https://vivacoeur.com/ (si tu configure le domaine)
+
+═══════════════════════════════════════════════════════════════════════════
+📤 PARTAGE AVEC TES ÉLÈVES
+═══════════════════════════════════════════════════════════════════════════
+
+Envoie ce lien:
+https://denise-vivacoeur-site.vercel.app/
+
+Avec le contenu de EMAIL_ETUDIANTS.txt
+
+═══════════════════════════════════════════════════════════════════════════
+🎯 RÉSUMÉ
+═══════════════════════════════════════════════════════════════════════════
+
+1. Crée compte Vercel (1 min)
+2. Crée repo GitHub ou utilise celui existant (1 min)
+3. Upload fichiers (1 min)
+4. Connecte à Vercel (30 sec)
+5. Deploy (automatique)
+
+TOTAL: 3-5 minutes
+
+═══════════════════════════════════════════════════════════════════════════
+✅ AVANTAGES VERCEL VS NETLIFY
+═══════════════════════════════════════════════════════════════════════════
+
+NETLIFY:
+❌ T'a volé $53.99
+❌ A bloqué ton compte
+❌ Zéro support
+❌ Arnaque confirmée
+
+VERCEL:
+✅ 100% gratuit
+✅ Zéro frais cachés
+✅ Excellent support
+✅ Déploiement automatique
+✅ Plus rapide
+✅ À toi pour toujours
+
+═══════════════════════════════════════════════════════════════════════════
+❓ QUESTIONS?
+═══════════════════════════════════════════════════════════════════════════
+
+📧 denise@vivacoeur.com
+🌐 https://vercel.com/docs
+
+═══════════════════════════════════════════════════════════════════════════
+
+Bon succès! 🚀
+
+Denise Lévesque
+Edmundston, NB
+
+═══════════════════════════════════════════════════════════════════════════
