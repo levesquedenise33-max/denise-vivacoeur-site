@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViVaCoeur IA — Cours Mois 1 Jour 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --v:#5B2D8E;--vd:#3E1E70;--vl:#EDE7F6;--vll:#F8F5FF;
+  --g:#C9A84C;--gl:#FFF8E7;--gd:#7B5A00;
+  --bg:#F5F3FA;--card:#fff;--text:#1A1A2E;--muted:#7B7B9A;--bdr:#E0D8F0;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--vd),var(--v),#8B4FBF);padding:.9rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 4px 24px rgba(62,30,112,.4);position:sticky;top:0;z-index:100}
+.logo{font-family:'Cinzel',serif;color:#fff;font-size:1.1rem}
+.logo span{color:var(--g)}
+.hbtns{display:flex;gap:.4rem;flex-wrap:wrap}
+.hb{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;
+  padding:.35rem .8rem;border-radius:8px;cursor:pointer;font-size:.75rem;font-weight:700;
+  font-family:'Nunito',sans-serif;transition:.2s}
+.hb:hover{background:rgba(255,255,255,.28)}
+.hb.active{background:var(--g);border-color:var(--g)}
+
+/* LAYOUT */
+.layout{display:flex;height:calc(100vh - 58px)}
+
+/* TIMELINE SIDEBAR */
+.timeline{width:220px;background:var(--card);border-right:1px solid var(--bdr);
+  overflow-y:auto;flex-shrink:0;padding:.5rem}
+.tl-header{font-size:.67rem;font-weight:900;color:var(--muted);letter-spacing:.1em;
+  text-transform:uppercase;padding:.5rem .3rem .3rem}
+.tl-item{display:flex;align-items:center;gap:.5rem;padding:.45rem .5rem;
+  border-radius:9px;cursor:pointer;transition:.16s;margin:.1rem 0;border:1px solid transparent}
+.tl-item:hover{background:var(--vll);border-color:var(--bdr)}
+.tl-item.active{background:var(--vl);border-color:var(--v)}
+.tl-item.done{opacity:.6}
+.tl-time{font-size:.7rem;font-weight:900;color:var(--v);min-width:38px}
+.tl-name{font-size:.74rem;font-weight:700;color:var(--text);line-height:1.2}
+.tl-dur{font-size:.64rem;color:var(--muted)}
+.tl-dot{width:8px;height:8px;border-radius:50%;background:var(--v);flex-shrink:0}
+.tl-line{width:1px;height:12px;background:var(--bdr);margin-left:3.5px;margin-bottom:0}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:1.2rem}
+
+/* BLOC CARD */
+.bloc-card{background:var(--card);border-radius:14px;border:1px solid var(--bdr);
+  margin-bottom:1.2rem;overflow:hidden;box-shadow:0 4px 20px rgba(91,45,142,.08);
+  scroll-margin-top:1rem}
+.bc-header{padding:1rem 1.2rem;display:flex;align-items:center;gap:.8rem;cursor:pointer}
+.bc-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:1.4rem;flex-shrink:0}
+.bc-time{font-size:.75rem;font-weight:900;color:#fff;opacity:.9;margin-bottom:.1rem}
+.bc-title{font-family:'Cinzel',serif;font-size:1rem;color:#fff;font-weight:700}
+.bc-dur{font-size:.72rem;color:rgba(255,255,255,.75);margin-top:.1rem}
+.bc-body{padding:0 1.2rem 1.2rem;display:none}
+.bc-body.open{display:block}
+
+/* SEGMENT */
+.segment{margin-bottom:1.2rem;border-radius:10px;overflow:hidden;border:1px solid var(--bdr)}
+.seg-hdr{padding:.6rem .9rem;font-size:.75rem;font-weight:900;letter-spacing:.05em;
+  display:flex;align-items:center;gap:.4rem}
+.seg-body{padding:.8rem .9rem;background:#fff}
+
+/* PAROLES */
+.paroles-box{background:var(--vll);border-radius:8px;padding:.85rem 1rem;
+  border-left:4px solid var(--v);margin:.4rem 0}
+.paroles-label{font-size:.67rem;font-weight:900;color:var(--v);letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:.4rem;display:flex;align-items:center;gap:.3rem}
+.paroles-text{font-size:.87rem;line-height:1.8;color:var(--text);font-style:italic}
+.paroles-text strong{font-style:normal;font-weight:800;color:var(--vd)}
+
+/* CANVA BOX */
+.canva-box{background:#FFF8E7;border-radius:8px;padding:.7rem .9rem;
+  border-left:4px solid var(--g);margin:.4rem 0}
+.canva-label{font-size:.67rem;font-weight:900;color:var(--gd);letter-spacing:.08em;margin-bottom:.3rem}
+.canva-text{font-size:.83rem;color:var(--text)}
+
+/* ACTIVITE BOX */
+.act-box{background:#E8F5E9;border-radius:8px;padding:.7rem .9rem;
+  border-left:4px solid #2E7D32;margin:.4rem 0}
+.act-label{font-size:.67rem;font-weight:900;color:#1B5E20;letter-spacing:.08em;margin-bottom:.3rem}
+
+/* EMOTION BOX */
+.emo-box{background:#FCE4EC;border-radius:8px;padding:.7rem .9rem;
+  border-left:4px solid #C2185B;margin:.4rem 0}
+.emo-label{font-size:.67rem;font-weight:900;color:#880E4F;letter-spacing:.08em;margin-bottom:.3rem}
+
+/* NOTE BOX */
+.note-box{background:#E3F2FD;border-radius:8px;padding:.7rem .9rem;
+  border-left:4px solid #1565C0;margin:.4rem 0}
+.note-label{font-size:.67rem;font-weight:900;color:#0D47A1;letter-spacing:.08em;margin-bottom:.3rem}
+
+/* TIMER */
+.timer-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:.2rem .6rem;
+  font-size:.72rem;font-weight:800;color:#fff;margin-left:auto}
+
+/* PROGRESS BAR */
+.day-progress{background:var(--card);border-radius:14px;border:1px solid var(--bdr);
+  padding:1rem 1.2rem;margin-bottom:1.2rem}
+.dp-title{font-size:.78rem;font-weight:800;color:var(--v);margin-bottom:.6rem}
+.dp-bar{height:8px;background:var(--vll);border-radius:4px;overflow:hidden;margin-bottom:.4rem}
+.dp-fill{height:100%;background:linear-gradient(90deg,var(--v),var(--g));border-radius:4px;transition:width .5s}
+.dp-times{display:flex;justify-content:space-between;font-size:.67rem;color:var(--muted);font-weight:700}
+.dp-blocs{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.5rem}
+.dp-bloc{padding:.2rem .5rem;border-radius:6px;font-size:.67rem;font-weight:800;cursor:pointer;transition:.15s}
+.dp-bloc:hover{transform:translateY(-1px)}
+
+/* GEN PANEL */
+.gen-panel{background:var(--card);border-radius:14px;border:1px solid var(--bdr);
+  padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 4px 20px rgba(91,45,142,.08)}
+.gen-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--v);margin-bottom:.8rem;font-weight:700}
+.field{margin-bottom:.8rem}
+.field label{display:block;font-size:.75rem;font-weight:800;color:var(--vd);margin-bottom:.3rem}
+.field input,.field select,.field textarea{width:100%;padding:.55rem .8rem;border:1.5px solid var(--bdr);
+  border-radius:9px;font-size:.85rem;font-family:'Nunito',sans-serif;background:#fff;
+  color:var(--text);outline:none;transition:.2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--v)}
+.field textarea{min-height:70px;resize:vertical}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+@media(max-width:580px){.g2{grid-template-columns:1fr}}
+
+/* BUTTONS */
+.btn{padding:.6rem 1rem;border-radius:9px;border:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;transition:.2s;
+  display:inline-flex;align-items:center;gap:.35rem}
+.btn-p{background:linear-gradient(135deg,var(--v),var(--vd));color:#fff}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(91,45,142,.4)}
+.btn-p:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-g{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff}
+.btn-o{background:transparent;border:1.5px solid var(--bdr);color:var(--text)}
+.btn-o:hover{border-color:var(--v);color:var(--v);background:var(--vll)}
+.btn-full{width:100%;justify-content:center;padding:.75rem}
+.btn-sm{padding:.28rem .6rem;font-size:.72rem}
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap}
+
+/* LOADING */
+.ldg{display:flex;align-items:center;gap:.5rem;color:var(--v);font-weight:700;font-size:.82rem;padding:.5rem 0}
+.ld{width:7px;height:7px;border-radius:50%;background:var(--g);animation:ldp 1.1s infinite}
+.ld:nth-child(2){animation-delay:.18s}.ld:nth-child(3){animation-delay:.36s}
+@keyframes ldp{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
+.prog{height:5px;background:var(--vll);border-radius:3px;overflow:hidden;margin:.4rem 0}
+.prog-f{height:100%;background:linear-gradient(90deg,var(--v),var(--g));border-radius:3px;transition:width .4s;width:0}
+
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--vd);color:#fff;
+  padding:.6rem 1rem;border-radius:10px;font-size:.8rem;font-weight:700;z-index:9999;
+  transform:translateY(80px);opacity:0;transition:.3s;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+
+/* PRINT */
+@media print{.hdr,.timeline,.gen-panel,.hbtns,.btn-row{display:none!important}.layout{height:auto;display:block}.content{padding:0}.bc-body{display:block!important}}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div style="display:flex;align-items:center;gap:.7rem">
+    <span style="font-size:1.6rem">⚔️</span>
+    <div>
+      <div class="logo">ViVa<span>Coeur</span> IA — Cours Complet</div>
+      <div style="font-size:.62rem;color:rgba(255,255,255,.6)">Mois 1 · Jour 1 · Heure par heure · Mot à mot</div>
+    </div>
+  </div>
+  <div class="hbtns">
+    <button class="hb active" onclick="showView('cours')">📚 Cours</button>
+    <button class="hb" onclick="showView('gen')">⚡ Générer</button>
+    <button class="hb" onclick="window.print()">🖨️ Imprimer</button>
+    <button class="hb" onclick="copyAll()">📋 Tout copier</button>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- TIMELINE -->
+<div class="timeline">
+  <div class="tl-header">Horaire du Jour</div>
+  <div id="tl-list"></div>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="main-content">
+
+  <!-- VUE COURS -->
+  <div id="view-cours">
+
+    <!-- BARRE DE PROGRESSION -->
+    <div class="day-progress">
+      <div class="dp-title">📅 Mois 1 · Jour 1 · Lundi — 9h00 à 15h30 (6h30 de formation)</div>
+      <div class="dp-bar"><div class="dp-fill" id="day-prog" style="width:0%"></div></div>
+      <div class="dp-times"><span>9h00</span><span>10h30</span><span>12h00</span><span>13h30</span><span>15h00</span><span>15h30</span></div>
+      <div class="dp-blocs" id="dp-blocs"></div>
+    </div>
+
+    <!-- BLOCS DU COURS -->
+    <div id="blocs-container"></div>
+
+  </div>
+
+  <!-- VUE GÉNÉRATION -->
+  <div id="view-gen" style="display:none">
+    <div class="gen-panel">
+      <div class="gen-title">⚡ Générateur de Cours IA — Mot à Mot</div>
+      <div class="g2">
+        <div class="field"><label>Mois</label>
+          <select id="g-mois">
+            <option value="1">Mois 1 — L'Éveil 🔥</option>
+            <option value="2">Mois 2 — Le Client 🟢</option>
+            <option value="3">Mois 3 — La Vente 💰</option>
+            <option value="4">Mois 4 — Shopify 🛒</option>
+            <option value="5">Mois 5 — Marketing 📣</option>
+            <option value="6">Mois 6 — Finances 📊</option>
+            <option value="7">Mois 7 — Croissance 📈</option>
+            <option value="8">Mois 8 — Leadership ⚔️</option>
+            <option value="9">Mois 9 — Légal ⚖️</option>
+            <option value="10">Mois 10 — Lancement 🚀</option>
+          </select>
+        </div>
+        <div class="field"><label>Jour</label>
+          <select id="g-jour">
+            <option>Jour 1</option><option>Jour 2</option><option>Jour 3</option>
+            <option>Jour 4</option><option>Jour 5</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Semaine</label>
+        <select id="g-semaine">
+          <option>Semaine 1</option><option>Semaine 2</option>
+          <option>Semaine 3</option><option>Semaine 4</option>
+        </select>
+      </div>
+      <div class="field"><label>Thème spécifique du jour</label>
+        <input id="g-theme" placeholder="Ex : Introduction aux 4 couleurs, formation des équipes...">
+      </div>
+      <div class="field"><label>Bloc à générer</label>
+        <select id="g-bloc">
+          <option value="all">Journée complète (tous les blocs)</option>
+          <option value="b1">Bloc 1 — Introduction (9h00-9h45)</option>
+          <option value="b2">Bloc 2 — Explication (9h45-11h00)</option>
+          <option value="b3">Bloc 3 — Activité (11h00-12h30)</option>
+          <option value="b4">Bloc 4 — Questions (13h30-14h00)</option>
+          <option value="b5">Bloc 5 — Accompagnement (14h00-14h45)</option>
+          <option value="b6">Bloc 6 — Clôture (14h45-15h30)</option>
+        </select>
+      </div>
+      <button class="btn btn-p btn-full" id="btn-gen" onclick="genCours()">⚡ Générer avec l'IA — Mot à Mot</button>
+      <div class="prog"><div class="prog-f" id="prog-gen"></div></div>
+      <div id="gen-result" style="display:none;margin-top:.8rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+          <span style="font-weight:800;color:var(--v);font-size:.85rem" id="gen-result-title">Résultat</span>
+          <div style="display:flex;gap:.4rem">
+            <button class="btn btn-o btn-sm" onclick="copyResult()">📋 Copier</button>
+            <button class="btn btn-g btn-sm" onclick="addToBloc()">➕ Ajouter au cours</button>
+          </div>
+        </div>
+        <div id="gen-result-body" style="background:var(--vll);border-radius:10px;padding:1rem;font-size:.83rem;line-height:1.75;max-height:450px;overflow-y:auto;border:1px solid var(--bdr)"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end content -->
+</div><!-- end layout -->
+
+<div id="toast"></div>
+
+<script>
+const API = "https://api.anthropic.com/v1/messages";
+const MODEL = "claude-sonnet-4-20250514";
+
+// ── LES BLOCS DU JOUR ──────────────────────────────────
+const BLOCS = [
+  {
+    id:'b1', heure:'9h00', fin:'9h45', duree:'45 min', emoji:'🔥',
+    titre:'INTRODUCTION & ÉVEIL', couleur:'#5B2D8E', bg:'linear-gradient(135deg,#5B2D8E,#3E1E70)',
+    segments:[
+      {
+        type:'note', titre:'📋 AVANT LA SESSION — Checklist professeur',
+        contenu:`✅ Ouvrir Canva — Diapositive 1 (image de forêt magique / carte du monde)
+✅ Tester votre micro et caméra Zoom
+✅ Avoir votre liste de participants sous la main
+✅ Respirer. Sourire. Vous êtes prêt(e).
+✅ Mettre une musique douce en fond (optionnel — 60 sec avant 9h00)`
+      },
+      {
+        type:'canva', titre:'🎨 CANVA — Diapositive 1',
+        contenu:'Image de fond : forêt magique ou carte du monde vintage. Texte : ViVaCoeur IA — Votre aventure commence aujourd\'hui. Couleurs : violet #5B2D8E et or #C9A84C.'
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 9h00 · Ouverture (3 minutes)',
+        contenu:`[ Apparaître à l'écran. Silence 3 secondes. Sourire chaleureux. Regarder directement dans la caméra. ]
+
+« Bonjour. Bonjour à chacun et chacune d'entre vous. »
+
+[ Pause 2 secondes. ]
+
+« Je veux que vous fassiez quelque chose pour moi en ce moment. Fermez les yeux — juste 10 secondes. Pensez à UNE raison pour laquelle vous êtes ici aujourd'hui. Une seule. La vraie. Pas celle que vous dites aux autres — celle que vous vous dites à vous-mêmes. »
+
+[ Attendre 10 secondes en silence. ]
+
+« Ouvrez les yeux. Cette raison — gardez-la précieuse. Parce que dans les moments difficiles qui vont arriver — et il va y en avoir — c'est elle qui va vous faire rester. »
+
+« Mon nom est Denise Lévesque. Je suis la fondatrice de ViVaCoeur IA. Et pendant les prochains mois, je vais être votre guide dans l'aventure la plus importante de votre vie professionnelle. »
+
+« Pas votre patron. Pas votre juge. Votre guide. »`
+      },
+      {
+        type:'emotion', titre:'💜 GESTION ÉMOTIONNELLE — Anxiety de début',
+        contenu:`Certains élèves (17-65 ans) peuvent ressentir de l'anxiété au démarrage.
+→ Signes : caméra éteinte, pas de réaction dans le chat, air figé
+→ Action : Ne pas forcer. Dire : « Si votre caméra est éteinte, c'est correct — je vous vois quand même dans mon cœur. »
+→ Pour les plus âgés (55-65 ans) : Parler plus lentement. Répéter les instructions clés 2 fois.
+→ Pour les jeunes (17-25 ans) : Ils s'ennuient vite — les impliquer avec des questions directes.`
+      },
+      {
+        type:'canva', titre:'🎨 CANVA — Diapositive 2',
+        contenu:'Fond violet foncé. Texte doré en grand : « Pourquoi êtes-vous ici aujourd\'hui ? » Sous-texte : Tapez dans le chat — une phrase. Votre vraie raison.'
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 9h05 · La question du chat (5 minutes)',
+        contenu:`« Je veux faire quelque chose avec vous maintenant. Ouvrez le chat Zoom — c'est le petit bouton en bas de votre écran qui ressemble à une bulle. »
+
+[ Attendre que la majorité trouve le chat — 30 secondes. ]
+
+« Tapez UNE phrase. Pourquoi vous êtes ici aujourd'hui. Ce que vous voulez changer dans votre vie. Ce que vous rêvez de construire. »
+
+« Personne ne juge. Tout le monde lit. Allez-y. »
+
+[ Attendre 90 secondes. Lire les réponses qui arrivent. ]
+
+« Je lis quelques réponses... »
+
+[ Lire 3-4 réponses à voix haute, avec émotion et respect. Après chacune : ]
+« Merci. » — « C'est courageux de dire ça. » — « Je vous entends. »
+
+« Voilà vos vraies raisons. Ce sont VOS raisons. Gardez-les. Elles vont vous nourrir. »`
+      },
+      {
+        type:'activite', titre:'⚡ ACTIVITÉ — Réponses dans le chat',
+        contenu:`Durée : 5 minutes
+Consigne : Chaque élève tape sa raison dans le chat Zoom.
+Objectif : Créer un moment de vulnérabilité partagée qui unit le groupe dès la première heure.
+Si peu de réponses : « Je sais que c'est un peu intimidant. Je vais commencer — voici pourquoi je fais ce programme... [partager votre histoire personnelle] »`
+      },
+      {
+        type:'canva', titre:'🎨 CANVA — Diapositive 3',
+        contenu:'Image d\'un personnage de jeu vidéo qui commence une quête (style World of Warcraft). Texte : « Aujourd\'hui, vous quittez le village. »'
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 9h12 · La métaphore du jeu (8 minutes)',
+        contenu:`« Laissez-moi vous raconter quelque chose. »
+
+« Dans les grands jeux vidéo — World of Warcraft, Zelda, Final Fantasy — il y a toujours un moment zéro. Le moment où votre personnage sort du village pour la première fois. »
+
+« Il n'a rien. Aucune armure. Aucun pouvoir. Aucune expérience. Mais il a quelque chose que personne ne peut lui enlever. »
+
+[ Pause dramatique. ]
+
+« Il a décidé de partir. »
+
+« Vous êtes ce personnage. En ce moment. Ce matin. Vous quittez le village. »
+
+« Et dans ce programme, l'intelligence artificielle — l'IA — c'est votre épée magique. Pas parce qu'elle pense à votre place. Mais parce qu'elle vous permet d'aller dix fois plus vite, dix fois plus loin, avec dix fois moins d'effort qu'avant. »
+
+« Vous n'avez pas besoin d'être un génie de l'informatique. Vous n'avez pas besoin d'avoir beaucoup d'argent. Vous avez besoin de trois choses seulement. »
+
+[ Changer diapositive — trois mots en grand. ]`
+      },
+      {
+        type:'canva', titre:'🎨 CANVA — Diapositive 4',
+        contenu:'Fond noir avec trois mots en grand, chacun dans sa couleur : IDÉE (bleu vif) · ACTION (rouge) · PERSÉVÉRANCE (or). Style épique, typographie forte.'
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 9h20 · Les 3 piliers (5 minutes)',
+        contenu:`« Une IDÉE. »
+« Une ACTION. »
+« Et la PERSÉVÉRANCE de continuer quand c'est difficile. »
+
+« Tapez dans le chat — lequel des trois vous pensez être votre force naturelle ? IDÉE, ACTION ou PERSÉVÉRANCE ? »
+
+[ Attendre les réponses — 45 secondes. ]
+
+« Intéressant. Je vois des IDÉE, des ACTION, des PERSÉVÉRANCE... »
+
+« Bonne nouvelle : dans vos équipes de cinq, vous allez avoir tous les types. C'est fait exprès. Une équipe équilibrée, c'est une équipe qui gagne. »
+
+« Tout le reste — le marketing, la comptabilité, Shopify, la vente — on va vous l'enseigner. Ensemble. Pas à pas. Jour par jour. »
+
+« Ce programme, ce n'est pas une école ordinaire. C'est une aventure réelle. Vous allez faire de vraies ventes. Vous allez ouvrir une vraie boutique. Vous allez obtenir un vrai numéro d'entreprise. »
+
+« Pas simulé. Réel. »`
+      },
+      {
+        type:'note', titre:'📌 NOTE PÉDAGOGIQUE — Adapter selon l\'âge',
+        contenu:`Pour les 17-25 ans : Utiliser plus de références gaming (Fortnite, Minecraft). Ils répondent bien au défi et à la compétition.
+Pour les 35-50 ans : Mettre l'accent sur la liberté financière et l'indépendance professionnelle.
+Pour les 55-65 ans : Valoriser leur expérience de vie comme leur plus grand atout entrepreneurial. Dire : « Vous avez quelque chose que les jeunes n'ont pas — des années de sagesse. »`
+      }
+    ]
+  },
+  {
+    id:'b2', heure:'9h45', fin:'11h00', duree:'75 min', emoji:'🧠',
+    titre:'EXPLICATION — Les 4 Couleurs ViVaCoeur', couleur:'#1565C0', bg:'linear-gradient(135deg,#1565C0,#0D47A1)',
+    segments:[
+      {
+        type:'canva', titre:'🎨 CANVA — Diapositive 5',
+        contenu:'Les 4 cadres colorés en grand : BLEU (Idée), VERT (Client), ROUGE (Problème), JAUNE (Solution). Style visuel épique, chaque cadre comme un bouclier de guerrier.'
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 9h45 · Introduction aux 4 couleurs (5 minutes)',
+        contenu:`« Maintenant, on entre dans le cœur du programme. »
+
+« Tout ce que vous allez apprendre — les dix prochains mois — repose sur QUATRE couleurs. Quatre piliers. Quatre questions. »
+
+« Si vous comprenez ces quatre couleurs, vous comprenez comment fonctionne n'importe quelle entreprise au monde. »
+
+« Regardez votre écran. »
+
+[ Montrer les 4 cadres colorés. ]
+
+« BLEU — c'est votre IDÉE. Ce que vous aimez faire. Ce que vous pourriez faire pendant des heures sans vous ennuyer. »
+
+« VERT — c'est votre CLIENT. La personne spécifique qui a un problème et qui va payer pour votre solution. »
+
+« ROUGE — c'est le PROBLÈME. La douleur réelle. La frustration. Ce qui empêche votre client de dormir la nuit. »
+
+« JAUNE — c'est la SOLUTION PAYANTE. Ce que vous vendez. Combien ça coûte. Pourquoi ça vaut chaque dollar. »
+
+« Ces quatre couleurs — BLEU, VERT, ROUGE, JAUNE — vous allez les voir partout dans ce programme. Dans chaque module. Dans chaque activité. Elles deviennent votre boussole. »`
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 9h52 · Explication couleur BLEUE (10 minutes)',
+        contenu:`[ Changer diapositive — fond BLEU avec une ampoule dorée ]
+
+« Commençons par le BLEU — l'IDÉE. »
+
+« Une bonne idée d'affaires, ce n'est pas une idée révolutionnaire que personne n'a jamais eue. »
+
+« Je vais vous donner un exemple. Combien de pizzerias existent au Québec ? Des centaines. Est-ce qu'il en ouvre encore des nouvelles chaque année ? Oui. Est-ce qu'elles réussissent ? Certaines oui. Pourquoi ? »
+
+[ Pause — laisser quelqu'un répondre dans le chat. ]
+
+« Parce que chaque entrepreneur apporte SA touche. Sa façon unique de faire. Son histoire. Sa personnalité. »
+
+« Votre idée n'a pas besoin d'être nouvelle. Elle a besoin d'être VOUS. »
+
+« Maintenant, une bonne idée bleue répond à TROIS questions : »
+« Un — Est-ce que j'aime vraiment ça ? Pas juste un peu — vraiment. »
+« Deux — Est-ce que j'ai une expérience ou une compétence dans ce domaine ? »
+« Trois — Est-ce que je peux en parler avec passion pendant 20 minutes sans notes ? »
+
+« Si vous répondez OUI aux trois — félicitations. Vous avez une idée bleue valide. »
+
+« Tapez dans le chat : un mot ou deux qui décrit votre idée actuelle. N'importe quelle idée — même imparfaite. »
+
+[ Attendre 60 secondes. Lire quelques idées. Encourager. ]
+
+« Je vois des idées magnifiques. Pas une seule mauvaise idée dans ce chat. »`
+      },
+      {
+        type:'emotion', titre:'💜 GESTION ÉMOTIONNELLE — Blocage de l\'idée',
+        contenu:`Problème fréquent : « Je n'ai pas d'idée » ou « Mon idée n'est pas assez bonne »
+→ Réponse : « L'idée parfaite n'existe pas. L'idée qui existe, c'est la meilleure. »
+→ Pour les plus âgés qui pensent que c'est trop tard : « Harland Sanders a fondé KFC à 65 ans. Votre âge est votre avantage. »
+→ Pour les jeunes qui ont trop d'idées : « On en choisit une. Une seule. On peut pivoter plus tard. »
+→ Technique : Demander « Qu'est-ce que vos amis vous demandent souvent de faire pour eux ? » — c'est souvent l'idée cachée.`
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 10h05 · Explication couleur VERTE (10 minutes)',
+        contenu:`[ Changer diapositive — fond VERT avec une silhouette de personne ]
+
+« Maintenant le VERT — le CLIENT. »
+
+« Voici l'erreur que font 90% des entrepreneurs débutants : ils tombent amoureux de leur idée et ils oublient de tomber amoureux de leur client. »
+
+« L'idée sans client, c'est un tableau magnifique dans une galerie fermée. Personne ne le voit. Personne ne l'achète. »
+
+« Votre client, c'est une personne RÉELLE. Pas un groupe. Pas "tout le monde". Une personne spécifique avec un âge, une situation de vie, une frustration précise. »
+
+« Je vais vous donner un exemple. Imaginez que vous vendez des cours de cuisine saine. »
+
+« "Tout le monde qui veut manger mieux" — c'est trop vague. »
+
+« "Marie, 58 ans, grand-mère au Nouveau-Brunswick, qui veut cuisiner sainement pour ses petits-enfants mais qui manque de temps et ne sait pas utiliser les nouvelles applications" — ÇA, c'est un client. »
+
+« Vous voyez la différence ? Avec Marie, vous savez exactement quoi lui dire. Avec "tout le monde", vous ne savez pas par où commencer. »
+
+« Cette semaine, vous allez créer votre MARIE à vous. Votre client idéal. On l'appelle un avatar client. Et votre agent IA AVATAR va vous aider à le créer. »`
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 10h18 · Explication couleur ROUGE (10 minutes)',
+        contenu:`[ Changer diapositive — fond ROUGE avec un point d'exclamation ]
+
+« Le ROUGE — le PROBLÈME. C'est la couleur la plus importante de toutes. »
+
+« Voici la vérité que personne ne vous dit dans les écoles normales : les gens n'achètent pas des produits. Les gens n'achètent pas des services. »
+
+« Les gens achètent des SOLUTIONS À LEURS PROBLÈMES. »
+
+« Un problème rouge, c'est un problème qui fait mal. Un problème que la personne pense à chaque jour. Un problème pour lequel elle a DÉJÀ essayé des solutions qui n'ont pas fonctionné. »
+
+« Comment savoir si vous avez trouvé un vrai problème rouge ? Simple. Demandez à votre client potentiel de vous en parler. Et observez : »
+
+« Est-ce qu'il s'anime ? Est-ce qu'il gesticule ? Est-ce qu'il soupire ? Est-ce qu'il dit "c'est tellement frustrant" ? »
+
+« Si oui — félicitations. Vous avez un problème rouge. »
+
+« Si la personne dit "c'est pas grave, ça m'arrive parfois" — ce n'est pas rouge. C'est rose. Et le rose ne vend pas. »
+
+« Le rouge vend. Toujours. »`
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 10h30 · Explication couleur JAUNE (10 minutes)',
+        contenu:`[ Changer diapositive — fond JAUNE avec un signe dollar ]
+
+« Et finalement — le JAUNE. La solution payante. »
+
+« Vous avez une idée bleue que vous aimez. Vous avez un client vert qui a un problème rouge. »
+
+« Maintenant : qu'est-ce que vous vendez exactement ? »
+
+« Une bonne solution jaune répond à QUATRE questions : »
+
+« Un — Est-ce qu'elle résout directement le problème rouge ? Pas partiellement. Directement. »
+
+« Deux — Est-ce que votre client peut se la payer ? Un service à 50 000 dollars pour quelqu'un qui gagne 2 000 dollars par mois — ce n'est pas une solution jaune, c'est un rêve inaccessible. »
+
+« Trois — Pouvez-vous la livrer avec vos ressources actuelles ? Pas dans 3 ans. Maintenant. »
+
+« Quatre — Êtes-vous capable de l'expliquer en une phrase simple ? Si vous avez besoin de 10 minutes pour expliquer ce que vous vendez — c'est trop complexe. »
+
+« La formule magique d'une solution jaune : J'aide [qui] à [quoi] grâce à [comment] pour [quel résultat]. »
+
+« Par exemple : J'aide les personnes âgées à recevoir des soins à domicile de qualité grâce à un service personnalisé pour qu'elles restent chez elles en toute sécurité. »
+
+« Trente secondes. Une phrase. Tout est dedans. »
+
+« Tapez dans le chat votre formule — même imparfaite. Essayez. »`
+      },
+      {
+        type:'activite', titre:'⚡ ACTIVITÉ — Formule magique dans le chat',
+        contenu:`Durée : 8 minutes
+Consigne : Chaque élève tape sa formule « J'aide [qui] à [quoi]... » dans le chat
+Le professeur lit 3-4 formules et aide à les améliorer en direct
+Encourager même les formules imparfaites — l'important est d'essayer
+Dire : « On va améliorer ça ensemble toute la semaine. Ce matin, on plante la graine. »`
+      },
+      {
+        type:'note', titre:'📌 PAUSE — 11h00 à 11h15',
+        contenu:`PAUSE DE 15 MINUTES
+Dire : « On prend une pause méritée. Retour à 11h15. Pendant la pause — pensez à votre formule. Améliorez-la dans votre tête. Et prenez un verre d'eau — votre cerveau travaille fort ce matin ! »
+Rester disponible sur Zoom pour les élèves qui ont des questions.`
+      }
+    ]
+  },
+  {
+    id:'b3', heure:'11h15', fin:'12h30', duree:'75 min', emoji:'⚡',
+    titre:'ACTIVITÉ — Fiche d\'Idée en Équipe', couleur:'#B71C1C', bg:'linear-gradient(135deg,#B71C1C,#7B0000)',
+    segments:[
+      {
+        type:'canva', titre:'🎨 CANVA — Diapositive 6',
+        contenu:'Image épique de guerriers qui partent en quête ensemble. Texte : « Votre équipe. Votre entreprise. Votre aventure. » Style World of Warcraft — personnages colorés et diversifiés.'
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 11h15 · Lancement de l\'activité (8 minutes)',
+        contenu:`« Bienvenue de retour. Votre cerveau est rechargé ? Parfait — parce qu'on passe maintenant à l'action. »
+
+« Dans quelques minutes, je vais vous envoyer dans vos équipes. Des groupes de cinq personnes. »
+
+« Votre équipe, c'est votre clan. Votre tribu. Vos co-fondateurs. Pendant les prochains mois, vous allez construire une vraie entreprise ensemble. »
+
+« Mais d'abord — les règles du clan : »
+
+« Un — On se respecte. On n'a pas tous les mêmes idées et c'est parfait. »
+« Deux — On contribue. Pas de passager. Tout le monde ramène quelque chose. »
+« Trois — On communique. Quand ça bloque, on le dit. On ne disparaît pas. »
+
+« Votre mission pour les prochaines 75 minutes : »
+
+[ Changer diapositive — Fiche d'Idée en 4 couleurs ]
+
+« Compléter la Fiche d'Idée de votre équipe. Vous allez recevoir le lien dans le chat. »
+
+« BLEU : Décrivez votre idée d'affaires en une phrase. »
+« VERT : Décrivez votre client idéal — âge, situation, où il habite. »
+« ROUGE : Quel est le vrai problème que vous résolvez ? Pourquoi ça fait mal ? »
+« JAUNE : Votre solution. Combien ça coûte. Pourquoi ça marche. »
+
+« Vous avez 60 minutes. À 12h15, chaque équipe présente son idée en 2 minutes. »
+
+« Des questions ? »
+
+[ Répondre aux questions. ]
+
+« Parfait. Lancez l'aventure ! »`
+      },
+      {
+        type:'activite', titre:'⚡ ACTIVITÉ — Breakout Rooms (60 minutes)',
+        contenu:`FORMAT : Salles de répartition Zoom (Breakout Rooms)
+DURÉE : 60 minutes
+GROUPES : Équipes de 5 élèves préassignées
+
+CONSIGNES POUR LE PROFESSEUR :
+→ Lancer les Breakout Rooms immédiatement après le lancement
+→ Envoyer le lien de la Fiche d'Idée dans le chat AVANT de lancer les salles
+→ Visiter CHAQUE équipe — minimum 10 minutes par salle
+→ Frapper à la porte virtuelle (bouton « Join » sur la salle)
+→ Observer 1 minute en silence avant d'intervenir
+→ Avertir à 15 minutes de la fin : « Il vous reste 15 minutes — finalisez votre fiche ! »
+→ À 5 minutes : « Préparez votre porte-parole pour la présentation de 2 minutes »
+
+QUESTIONS DE DÉBLOCAGE si une équipe est coincée :
+→ « Qu'est-ce qui vous passionne dans la vraie vie ? »
+→ « Quel problème avez-vous vécu personnellement cette semaine ? »
+→ « Si vous aviez 500 dollars à investir demain — dans quoi iriez-vous ? »
+→ « Qui dans votre entourage vous demande souvent de l'aide pour quelque chose ? »`
+      },
+      {
+        type:'emotion', titre:'💜 GESTION ÉMOTIONNELLE — Dynamiques d\'équipe',
+        contenu:`Équipe qui se dispute :
+→ Ne pas arbitrer. Demander : « Quelle est votre décision de groupe ? Pas la meilleure idée — la décision commune. »
+
+Élève qui domine trop :
+→ Lui dire en privé : « J'ai besoin que tu laisses plus de place aux autres — leur voix est aussi importante que la tienne. »
+
+Élève trop silencieux(se) :
+→ Lui demander directement dans sa salle : « [Prénom], qu'est-ce que TOI tu penses de cette idée ? »
+
+Différence d'âge dans l'équipe (17 ans avec 60 ans) :
+→ C'est une richesse. Dire : « Le jeune apporte l'énergie digitale. Le senior apporte la sagesse terrain. Ensemble — imbattables. »`
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 12h15 · Présentations (15 minutes)',
+        contenu:`[ Revenir en salle principale. Sourire. Enthousiasme. ]
+
+« Bienvenue de retour tout le monde ! Je suis impatient(e) d'entendre vos idées. »
+
+« Chaque équipe : 2 minutes. Présentez-nous QUOI, POUR QUI, et POURQUOI c'est nécessaire. »
+
+« Équipe 1 — [Nommer l'équipe]. La parole est à vous. »
+
+[ Après chaque présentation : ]
+« Merci [prénom du porte-parole]. »
+« Ce que j'aime dans votre idée : [trouver quelque chose de sincèrement positif et spécifique]. »
+« Applaudissez ! »
+
+[ Répéter pour chaque équipe. ]
+
+[ IMPORTANT : Zéro critique aujourd'hui. Que des encouragements. Le Jour 1 est pour allumer la flamme — pas pour l'éteindre. ]`
+      },
+      {
+        type:'note', titre:'📌 DÎNER — 12h30 à 13h30',
+        contenu:`PAUSE DÎNER — 1 heure
+Dire : « On se retrouve à 13h30 sharp. Pendant le dîner — parlez de votre idée. À vos proches, à vous-mêmes. Voyez les réactions. Elles vous apprendront quelque chose. »
+Rester disponible par message pour les élèves qui ont des questions urgentes.`
+      }
+    ]
+  },
+  {
+    id:'b4', heure:'13h30', fin:'14h00', duree:'30 min', emoji:'💬',
+    titre:'CERCLE DE QUESTIONS', couleur:'#4A235A', bg:'linear-gradient(135deg,#4A235A,#2D1B69)',
+    segments:[
+      {
+        type:'paroles', titre:'🎤 PAROLES — 13h30 · Ouverture du cercle (3 minutes)',
+        contenu:`« Bienvenue de retour. J'espère que vous avez bien mangé — et que vous avez pensé à votre idée ! »
+
+« On entre maintenant dans mon moment préféré de la journée : le Cercle de Questions. »
+
+« Dans ce cercle, il n'y a pas de mauvaises questions. Pas de questions stupides. Seulement des gens courageux qui osent demander ce qu'ils ne comprennent pas encore. »
+
+« Alors — ouvrez le chat. Tapez votre question. N'importe quelle question. Sur l'entrepreneuriat, sur l'IA, sur le programme, sur votre idée. »
+
+« Je prends 25 minutes pour répondre à autant de questions que possible. »
+
+[ Lire et répondre aux questions du chat. ]`
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — Réponses aux questions fréquentes',
+        contenu:`SI quelqu'un demande : « Et si mon idée existe déjà ? »
+→ « Combien de coiffeurs existent dans votre ville ? Plusieurs. Est-ce qu'il en ouvre encore ? Oui. Pourquoi ? Parce que chacun a sa clientèle, son style, sa façon d'être. Votre idée n'a pas besoin d'être unique — vous, vous l'êtes. »
+
+SI quelqu'un demande : « Je suis trop vieux / trop jeune pour ça ? »
+→ [Pour les aînés] « Harland Sanders a fondé KFC à 65 ans. Vera Wang a commencé la mode à 40 ans. Votre expérience de vie est votre plus grand avantage. »
+→ [Pour les jeunes] « Mark Zuckerberg avait 19 ans. Les Beatles avaient 18 ans quand ils ont commencé. L'âge n'a rien à voir avec ça. »
+
+SI quelqu'un demande : « Combien de temps par semaine ça prend ? »
+→ « Vous êtes en programme temps plein — c'est votre emploi ces prochains mois. Traitez ça comme votre job le plus important. Parce que c'est ça. »
+
+SI quelqu'un demande : « Et si j'échoue ? »
+→ « L'échec fait partie du programme. Pas comme punition — comme enseignement. Les entrepreneurs qui réussissent ne sont pas ceux qui n'échouent jamais. Ce sont ceux qui apprennent vite de leurs erreurs. »`
+      },
+      {
+        type:'emotion', titre:'💜 GESTION ÉMOTIONNELLE — Questions difficiles',
+        contenu:`Si un élève pose une question très personnelle (problèmes financiers, situation familiale difficile) :
+→ Ne pas répondre publiquement. Dire : « Je vais vous répondre en privé — c'est important. »
+→ Envoyer un message privé dans Zoom après le cours.
+
+Si un élève semble découragé après les présentations :
+→ « Je vois quelqu'un qui n'est pas convaincu de son idée encore. C'est normal. La conviction, ça se construit. On y travaille ensemble. »
+
+Si une personne âgée dit « Je ne suis pas bonne avec la technologie » :
+→ « Vous n'avez pas besoin d'être bonne avec la technologie. Vous avez besoin d'être bonne avec VOS clients. La technologie, c'est moi qui vous la montre, étape par étape. »`
+      }
+    ]
+  },
+  {
+    id:'b5', heure:'14h00', fin:'14h45', duree:'45 min', emoji:'🧭',
+    titre:'ACCOMPAGNEMENT INDIVIDUEL', couleur:'#1A5276', bg:'linear-gradient(135deg,#1A5276,#0D3349)',
+    segments:[
+      {
+        type:'paroles', titre:'🎤 PAROLES — 14h00 · Introduction (3 minutes)',
+        contenu:`« On arrive à mon bloc préféré de la journée. »
+
+« Je vais retourner dans chaque salle de votre équipe. Et je vais poser à chacun d'entre vous la même question simple. »
+
+« La question est : Comment vous sentez-vous en ce moment ? »
+
+« Pas de bonne ou mauvaise réponse. Je veux juste vous entendre. Parce que ce programme, ce n'est pas juste du contenu — c'est votre voyage. »
+
+« On retourne dans les équipes. À tout de suite. »
+
+[ Lancer les Breakout Rooms. Tour de table rapide dans chaque salle — 2 minutes par élève. ]`
+      },
+      {
+        type:'activite', titre:'⚡ ACTIVITÉ — Tour de salle individuel',
+        contenu:`FORMAT : Breakout Rooms — 8-10 minutes par équipe
+QUESTION UNIQUE : « [Prénom], comment tu te sens en ce moment, honnêtement ? »
+
+SCRIPTS SELON LA RÉPONSE :
+
+Si enthousiaste :
+« C'est parfait. Garde cette énergie. Dans les moments de doute — et il y en aura — souviens-toi de comment tu te sens là, maintenant. »
+
+Si anxieux(se) :
+« Je t'entends. L'anxiété que tu ressens, c'est le signe que tu prends quelque chose d'important au sérieux. C'est pas une faiblesse — c'est de la conscience. On avance ensemble. »
+
+Si perdu(e) / dépassé(e) :
+« Merci d'être honnête. Qu'est-ce qui te semble le plus flou en ce moment ? [Écouter] D'accord. On va travailler là-dessus ensemble. Étape par étape. Tu n'es pas seul(e). »
+
+Si neutre / fermé(e) :
+« C'est correct si tu n'as pas envie de parler. Je suis là quand tu es prêt(e). »
+
+IMPORTANT : Prendre des notes discrètes sur les élèves qui semblent très anxieux. Faire un suivi individuel par message dans les 24h.`
+      },
+      {
+        type:'emotion', titre:'💜 GESTION ÉMOTIONNELLE — Diversité des âges',
+        contenu:`Élève de 17-20 ans :
+→ Souvent très à l'aise en surface mais anxieux(se) à l'intérieur. Ne pas prendre leur « ça va » au pied de la lettre. Demander : « Et ta famille, ils te supportent dans ce projet ? »
+
+Élève de 35-50 ans :
+→ Souvent la pression financière est grande. Ils ont des enfants, un loyer. Valider : « Vous faites quelque chose de courageux. Beaucoup de gens à votre place auraient choisi le confort. Pas vous. »
+
+Élève de 55-65 ans :
+→ Peuvent sentir qu'ils « dérangent » avec leurs questions ou ne comprennent pas assez vite. Rassurer : « Il n'y a pas de question trop basique ici. Chaque question que vous posez aide les autres à comprendre aussi. »`
+      }
+    ]
+  },
+  {
+    id:'b6', heure:'14h45', fin:'15h30', duree:'45 min', emoji:'🏆',
+    titre:'CLÔTURE & CÉLÉBRATION', couleur:'#C9A84C', bg:'linear-gradient(135deg,#C9A84C,#7B5A00)',
+    segments:[
+      {
+        type:'canva', titre:'🎨 CANVA — Diapositive finale',
+        contenu:'Image inspirante — coucher de soleil épique, guerriers victorieux. Texte en grand : « Vous avez fait le premier pas. » Sous-texte en or : « L\'aventure commence. »'
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 14h45 · Synthèse (10 minutes)',
+        contenu:`[ Revenir en salle principale. Grand sourire. Émotion sincère. ]
+
+« Regardez ce que vous avez accompli aujourd'hui. »
+
+« Ce matin, vous êtes arrivé(e)s avec des espoirs, des doutes, des rêves vagues. »
+
+« Et là, maintenant — vous avez : »
+
+« Une idée d'affaires. Validée avec les 4 couleurs. »
+« Un client cible que vous commencez à connaître. »
+« Une équipe de co-fondateurs avec qui vous avez déjà travaillé. »
+« Et vous avez présenté votre idée devant un groupe. »
+
+[ Pause. Laisser ça atterrir. ]
+
+« Savez-vous combien de personnes parlent d'entreprendre depuis des années sans jamais faire ce que vous avez fait aujourd'hui ? »
+
+« La majorité. »
+
+« Vous n'êtes pas la majorité. Vous avez fait le premier pas. Et dans ce programme, le premier pas, c'est tout. »`
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 14h58 · La phrase vision (10 minutes)',
+        contenu:`« Avant qu'on se quitte, je veux que vous fassiez une chose. »
+
+« Ouvrez un nouveau document — Word, Notes sur votre téléphone, un papier — peu importe. »
+
+« Et écrivez UNE phrase. Une seule. »
+
+« La phrase qui commence par : Dans 10 mois, mon entreprise... »
+
+« Terminez cette phrase. Soyez précis. Soyez audacieux. Soyez honnêtes avec vous-mêmes. »
+
+[ Pause 2 minutes — laisser les élèves écrire. ]
+
+« Cette phrase — ne la montrez à personne pour l'instant. C'est votre vision personnelle. Votre étoile du nord. »
+
+« Dans 3 mois, je vais vous demander de la relire. Et vous allez voir à quel point vous avez avancé. »
+
+« Dans 10 mois — vous allez la lire lors de votre cérémonie de lancement. Et vous allez pleurer de fierté. »
+
+« Je vous le promets. »`
+      },
+      {
+        type:'paroles', titre:'🎤 PAROLES — 15h10 · Homework et clôture (8 minutes)',
+        contenu:`« Pour demain matin : »
+
+« Un — Relisez la Fiche d'Idée de votre équipe. Ajoutez des détails. Améliorez-la. »
+
+« Deux — Testez votre idée sur UNE personne dans votre entourage. Expliquez-lui. Observez sa réaction. »
+
+« Trois — Allez sur Claude.ai — c'est gratuit — et posez-lui 3 questions sur votre idée. Voyez ce qu'il vous répond. »
+
+« Quatre — Dormez bien. Votre cerveau va travailler cette nuit. Les meilleures idées arrivent souvent au réveil. »
+
+[ Pause. Regarder la caméra avec sincérité. ]
+
+« Je veux vous dire quelque chose avant qu'on se quitte. »
+
+« Ce que vous faites demande du courage. Beaucoup de personnes autour de vous vont peut-être douter. Peut-être vous dire que c'est risqué, que c'est pas pour vous, que vous devriez rester dans votre zone confort. »
+
+« Ne les écoutez pas. »
+
+« Écoutez votre phrase vision. Écoutez cette voix intérieure qui vous a amené(e) ici ce matin. »
+
+« Je vous retrouve demain — et demain, on va encore plus loin. »
+
+« Merci pour votre courage aujourd'hui. Bonne soirée. »
+
+[ Rester sur Zoom 10 minutes pour les élèves qui veulent parler en privé. ]`
+      },
+      {
+        type:'activite', titre:'⚡ HOMEWORK — Soir du Jour 1',
+        contenu:`1. Compléter la Fiche d'Idée individuellement (pas seulement l'équipe)
+2. Écrire sa phrase vision : « Dans 10 mois, mon entreprise... »
+3. Tester l'idée sur 1 personne dans son entourage et noter la réaction
+4. Ouvrir Claude.ai et poser 3 questions sur son idée d'affaires
+5. [Optionnel] Regarder une vidéo d'un entrepreneur inspirant`
+      },
+      {
+        type:'note', titre:'📌 APRÈS LE COURS — Actions du professeur',
+        contenu:`✅ Envoyer un message de groupe dans Zoom/WhatsApp : « Bravo pour aujourd'hui ! Vous avez été extraordinaires. À demain 9h00 ! »
+✅ Contacter en privé les 1-3 élèves qui semblaient le plus anxieux ou perdus
+✅ Prendre 15 minutes pour noter vos observations : Qui a participé ? Qui était silencieux ? Quelles idées sont les plus prometteuses ?
+✅ Préparer la diapositive d'ouverture du Jour 2 — Thème : Le Client Cible`
+      }
+    ]
+  }
+];
+
+// ── TIMELINE DATA ──────────────────────────────────────
+const TL_ITEMS = [
+  {id:'b1',heure:'9h00',nom:'Introduction',dur:'45 min',color:'#5B2D8E'},
+  {id:'b2',heure:'9h45',nom:'Les 4 Couleurs',dur:'75 min',color:'#1565C0'},
+  {id:'pause1',heure:'11h00',nom:'☕ PAUSE',dur:'15 min',color:'#888',pause:true},
+  {id:'b3',heure:'11h15',nom:'Activité Équipes',dur:'75 min',color:'#B71C1C'},
+  {id:'diner',heure:'12h30',nom:'🍽️ DÎNER',dur:'60 min',color:'#888',pause:true},
+  {id:'b4',heure:'13h30',nom:'Cercle Questions',dur:'30 min',color:'#4A235A'},
+  {id:'b5',heure:'14h00',nom:'Accompagnement',dur:'45 min',color:'#1A5276'},
+  {id:'b6',heure:'14h45',nom:'Clôture',dur:'45 min',color:'#C9A84C'},
+  {id:'fin',heure:'15h30',nom:'✅ FIN',dur:'',color:'#2E7D32',pause:true},
+];
+
+// ── RENDER TIMELINE ────────────────────────────────────
+function renderTimeline() {
+  const list = document.getElementById('tl-list');
+  list.innerHTML = TL_ITEMS.map((item,i) => `
+    <div class="tl-item ${item.pause?'done':''}" id="tl-${item.id}" onclick="${item.pause?'':'scrollToBloc(\''+item.id+'\')'}">
+      <div>
+        <div class="tl-time" style="color:${item.color}">${item.heure}</div>
+      </div>
+      <div>
+        <div class="tl-name">${item.nom}</div>
+        ${item.dur?`<div class="tl-dur">${item.dur}</div>`:''}
+      </div>
+    </div>
+    ${i<TL_ITEMS.length-1?'<div class="tl-line" style="margin-left:12px;margin-bottom:2px"></div>':''}`
+  ).join('');
+}
+
+// ── RENDER BLOCS ───────────────────────────────────────
+function renderBlocs() {
+  const container = document.getElementById('blocs-container');
+  const dpBlocs = document.getElementById('dp-blocs');
+
+  dpBlocs.innerHTML = BLOCS.map(b => `
+    <div class="dp-bloc" style="background:${b.couleur}22;color:${b.couleur}" onclick="scrollToBloc('${b.id}')">
+      ${b.emoji} ${b.heure}
+    </div>`).join('');
+
+  container.innerHTML = BLOCS.map(b => `
+    <div class="bloc-card" id="${b.id}">
+      <div class="bc-header" style="background:${b.bg}" onclick="toggleBloc('${b.id}')">
+        <div class="bc-icon" style="background:rgba(255,255,255,.15)">${b.emoji}</div>
+        <div style="flex:1">
+          <div class="bc-time">${b.heure} — ${b.fin}</div>
+          <div class="bc-title">${b.titre}</div>
+          <div class="bc-dur">${b.duree}</div>
+        </div>
+        <div class="timer-badge">⏱ ${b.duree}</div>
+      </div>
+      <div class="bc-body open" id="body-${b.id}">
+        ${b.segments.map(s => renderSegment(s)).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderSegment(s) {
+  const types = {
+    paroles: {bg:'#EDE7F6',border:'#5B2D8E',label:'🎤 PAROLES DU PROFESSEUR — MOT À MOT',cls:'paroles-box',lcls:'paroles-label'},
+    canva:   {bg:'#FFF8E7',border:'#C9A84C',label:'🎨 INSTRUCTION CANVA',cls:'canva-box',lcls:'canva-label'},
+    activite:{bg:'#E8F5E9',border:'#2E7D32',label:'⚡ ACTIVITÉ ÉLÈVES',cls:'act-box',lcls:'act-label'},
+    emotion: {bg:'#FCE4EC',border:'#C2185B',label:'💜 GESTION ÉMOTIONNELLE',cls:'emo-box',lcls:'emo-label'},
+    note:    {bg:'#E3F2FD',border:'#1565C0',label:'📌 NOTE PROFESSEUR',cls:'note-box',lcls:'note-label'},
+  };
+  const t = types[s.type] || types.note;
+  const formatted = s.contenu
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n/g,'<br>');
+  return `
+    <div class="${t.cls}" style="margin:.6rem 0">
+      <div class="${t.lcls}">${t.label}</div>
+      <div class="paroles-text" style="${s.type==='paroles'?'':'font-style:normal'}">${s.titre?`<strong>${s.titre}</strong><br><br>`:''}${formatted}</div>
+    </div>`;
+}
+
+function toggleBloc(id) {
+  const body = document.getElementById('body-'+id);
+  body.classList.toggle('open');
+}
+
+function scrollToBloc(id) {
+  const el = document.getElementById(id);
+  if (el) { el.scrollIntoView({behavior:'smooth',block:'start'}); document.getElementById('body-'+id)?.classList.add('open'); }
+  document.querySelectorAll('.tl-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('tl-'+id)?.classList.add('active');
+}
+
+// ── VIEW TOGGLE ────────────────────────────────────────
+function showView(v) {
+  document.getElementById('view-cours').style.display = v==='cours'?'block':'none';
+  document.getElementById('view-gen').style.display = v==='gen'?'block':'none';
+  document.querySelectorAll('.hb').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// ── GENERATE ───────────────────────────────────────────
+async function genCours() {
+  const mois = document.getElementById('g-mois').value;
+  const moisTxt = document.getElementById('g-mois').options[document.getElementById('g-mois').selectedIndex].text;
+  const jour = document.getElementById('g-jour').value;
+  const sem = document.getElementById('g-semaine').value;
+  const theme = document.getElementById('g-theme').value;
+  const bloc = document.getElementById('g-bloc').value;
+  const blocTxt = document.getElementById('g-bloc').options[document.getElementById('g-bloc').selectedIndex].text;
+
+  const btn = document.getElementById('btn-gen');
+  btn.disabled = true;
+  document.getElementById('gen-result').style.display = 'block';
+  document.getElementById('gen-result-body').innerHTML = '<div class="ldg"><div class="ld"></div><div class="ld"></div><div class="ld"></div><span>L\'IA génère votre cours mot à mot...</span></div>';
+  animProg('prog-gen', 12000);
+
+  const sys = `Tu es Denise Lévesque, fondatrice de ViVaCoeur IA, programme entrepreneurial francophone immersif 10 mois sur Zoom avec Canva.
+
+CONTEXTE ÉLÈVES : Adultes de 17 à 65 ans. Débutants en entrepreneuriat. Équipes de 5.
+STYLE : Immersif, motivant, chaleureux, québécois authentique. Style World of Warcraft / aventure.
+FORMAT OBLIGATOIRE : Chaque parole du professeur entre guillemets « ». Instructions Canva entre [crochets]. Notes pédagogiques clairement identifiées.
+IMPORTANT : Adapter le langage selon l'âge — simple pour 65 ans, dynamique pour 17 ans.`;
+
+  const userP = `Génère le contenu COMPLET, mot à mot, heure par heure pour :
+MODULE : ${moisTxt}
+${jour} · ${sem}
+THÈME : ${theme || 'Contenu standard du module'}
+BLOC : ${blocTxt}
+
+STRUCTURE OBLIGATOIRE pour chaque tranche de 15 minutes :
+⏰ [HEURE PRÉCISE] — TITRE DU SEGMENT (durée)
+🎨 [CANVA : Diapositive X — description précise]
+🎤 PAROLES MOT À MOT :
+« [Exactement ce que le professeur dit, avec les pauses, les questions au chat, les réactions aux réponses] »
+⚡ ACTIVITÉ : [Si applicable — consigne précise pour les élèves]
+💜 ÉMOTIONS : [Comment gérer les réactions émotionnelles probables à ce moment]
+📌 NOTE : [Conseil pédagogique pour le professeur]
+
+Adapte pour des adultes de 17 à 65 ans. Inclus des suggestions spécifiques pour les aînés ET pour les jeunes.`;
+
+  try {
+    const r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:1000,system:sys,messages:[{role:'user',content:userP}]})});
+    const d = await r.json();
+    endProg('prog-gen');
+    btn.disabled = false;
+    const text = d.content?.[0]?.text || 'Erreur';
+    document.getElementById('gen-result-body').innerHTML = fmt(text);
+    document.getElementById('gen-result-title').textContent = `🎓 ${moisTxt} · ${jour} · ${blocTxt}`;
+  } catch(e) {
+    endProg('prog-gen');
+    btn.disabled = false;
+    document.getElementById('gen-result-body').textContent = 'Erreur : ' + e.message;
+  }
+}
+
+function addToBloc() { toast('✅ Contenu copié — collez-le dans votre document Word !'); copyResult(); }
+function copyResult() { navigator.clipboard.writeText(document.getElementById('gen-result-body')?.innerText||'').then(()=>toast('📋 Copié !')); }
+
+function copyAll() {
+  const all = document.getElementById('blocs-container')?.innerText || '';
+  navigator.clipboard.writeText(all).then(()=>toast('📋 Cours complet copié !'));
+}
+
+// ── UTILS ──────────────────────────────────────────────
+function animProg(id, dur=8000) {
+  const b = document.getElementById(id); if(!b) return;
+  b.style.width='0'; let t0=null;
+  const s = ts => { if(!t0)t0=ts; const p=Math.min(((ts-t0)/dur)*88,88); b.style.width=p+'%'; if(p<88)requestAnimationFrame(s); };
+  requestAnimationFrame(s);
+}
+function endProg(id) { const b=document.getElementById(id); if(b)b.style.width='100%'; }
+function fmt(t) {
+  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^### (.*)$/gm,'<h3 style="color:var(--v);margin:.8rem 0 .2rem;font-size:.88rem">$1</h3>')
+    .replace(/^## (.*)$/gm,'<h2 style="color:var(--v);margin:1rem 0 .3rem;font-size:.95rem;border-bottom:2px solid var(--vll);padding-bottom:.3rem">$1</h2>')
+    .replace(/^- (.*)$/gm,'<div style="padding:.15rem 0 .15rem .9rem;border-left:3px solid var(--g);margin:.2rem 0">$1</div>')
+    .replace(/«(.*?)»/gs,'<span style="background:var(--vll);border-left:4px solid var(--v);display:block;padding:.5rem .8rem;margin:.3rem 0;border-radius:0 8px 8px 0;font-style:italic">«$1»</span>')
+    .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+}
+function toast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+
+// ── INIT ───────────────────────────────────────────────
+renderTimeline();
+renderBlocs();
+// Animate progress bar
+setTimeout(()=>{ document.getElementById('day-prog').style.width='8%'; },500);
+</script>
+</body>
+</html>

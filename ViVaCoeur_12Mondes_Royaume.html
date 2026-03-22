@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViVaCoeur IA — Les 12 Mondes du Royaume</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --v:#5B2D8E;--vd:#3E1E70;--vl:#EDE7F6;
+  --g:#C9A84C;--gd:#7B5A00;--gl:#FFF8E7;
+  --bg:#0D0A1A;--card:#1A1030;--text:#F0E8FF;--muted:#9B8EC4;
+  --bdr:#3D2A6E;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at top,#1A0A3E 0%,#0D0A1A 70%)}
+
+/* STARS */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+
+/* HEADER */
+.header{position:relative;z-index:10;text-align:center;padding:3rem 1.5rem 2rem}
+.header-badge{display:inline-block;background:linear-gradient(135deg,var(--g),var(--gd));
+  color:#fff;font-size:.72rem;font-weight:900;padding:.3rem .9rem;border-radius:20px;
+  letter-spacing:.1em;margin-bottom:1rem}
+.header h1{font-family:'Cinzel',serif;font-size:clamp(1.8rem,5vw,3rem);
+  background:linear-gradient(135deg,#fff,var(--g),#C9A4FF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1.2;margin-bottom:.8rem}
+.header p{color:var(--muted);font-size:.95rem;max-width:600px;margin:0 auto}
+
+/* LUNARIA INTRO */
+.lunaria-box{max-width:700px;margin:0 auto 2rem;padding:1.5rem 2rem;
+  background:linear-gradient(135deg,rgba(91,45,142,.3),rgba(62,30,112,.2));
+  border:1px solid rgba(201,168,76,.3);border-radius:16px;text-align:center;
+  position:relative;z-index:10}
+.lunaria-emoji{font-size:3rem;margin-bottom:.5rem}
+.lunaria-name{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--g);margin-bottom:.4rem}
+.lunaria-msg{font-size:.88rem;color:#C9A4FF;line-height:1.7;font-style:italic}
+
+/* PROGRESS PATH */
+.path-container{max-width:1100px;margin:0 auto;padding:0 1rem 4rem;position:relative;z-index:10}
+
+/* WORLD CARDS */
+.worlds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem;margin-bottom:2rem}
+
+.world-card{border-radius:16px;overflow:hidden;cursor:pointer;transition:all .3s;
+  border:1px solid rgba(255,255,255,.1);position:relative}
+.world-card:hover{transform:translateY(-6px);box-shadow:0 16px 48px rgba(0,0,0,.5)}
+.world-card.open .wc-body{display:block}
+
+.wc-header{padding:1.2rem;display:flex;align-items:center;gap:.9rem}
+.wc-num{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-family:'Cinzel',serif;font-size:1.1rem;font-weight:900;
+  color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,.3)}
+.wc-info{flex:1}
+.wc-world{font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:.2rem}
+.wc-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;line-height:1.2}
+.wc-sub{font-size:.72rem;opacity:.7;margin-top:.2rem}
+.wc-emoji{font-size:2rem;flex-shrink:0}
+.wc-toggle{font-size:.8rem;opacity:.6;flex-shrink:0;transition:.2s}
+.world-card.open .wc-toggle{transform:rotate(180deg)}
+
+.wc-body{display:none;padding:0 1.2rem 1.2rem;border-top:1px solid rgba(255,255,255,.1);margin-top:0;padding-top:1rem}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.9rem}
+.info-box{border-radius:10px;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.1)}
+.ib-label{font-size:.62rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-bottom:.3rem}
+.ib-value{font-size:.85rem;font-weight:700}
+
+.mission-box{border-radius:10px;padding:.8rem 1rem;margin-bottom:.9rem;
+  background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3)}
+.mb-label{font-size:.62rem;font-weight:900;color:var(--g);letter-spacing:.08em;margin-bottom:.4rem}
+.mb-text{font-size:.83rem;line-height:1.6;color:#F0D898}
+
+.script-box{border-radius:10px;padding:.8rem 1rem;margin-bottom:.9rem;
+  background:rgba(91,45,142,.2);border-left:4px solid var(--v)}
+.sb-label{font-size:.62rem;font-weight:900;color:#C9A4FF;letter-spacing:.08em;margin-bottom:.4rem}
+.sb-text{font-size:.83rem;line-height:1.7;color:#E0D0FF;font-style:italic}
+
+.rewards-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.reward-badge{padding:.3rem .7rem;border-radius:20px;font-size:.72rem;font-weight:800;
+  background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);color:var(--g)}
+
+.age-box{border-radius:10px;padding:.7rem .9rem;margin-top:.7rem;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.ab-label{font-size:.62rem;font-weight:900;letter-spacing:.08em;opacity:.6;margin-bottom:.4rem}
+.age-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.age-item{font-size:.75rem;padding:.4rem .6rem;border-radius:7px;background:rgba(255,255,255,.05)}
+.age-tag{font-weight:900;margin-right:.3rem}
+
+/* TIMELINE */
+.timeline-bar{max-width:1100px;margin:0 auto 2rem;padding:0 1rem;position:relative;z-index:10}
+.tl-track{display:flex;align-items:center;gap:0;overflow-x:auto;padding:.5rem 0}
+.tl-item{display:flex;flex-direction:column;align-items:center;flex-shrink:0;cursor:pointer;transition:.2s}
+.tl-item:hover .tl-dot{transform:scale(1.3)}
+.tl-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:.9rem;border:2px solid rgba(255,255,255,.2);
+  transition:.2s;margin-bottom:.3rem}
+.tl-label{font-size:.6rem;font-weight:800;text-align:center;max-width:60px;
+  color:var(--muted);line-height:1.2}
+.tl-line{flex:1;height:2px;min-width:20px;background:linear-gradient(90deg,rgba(91,45,142,.5),rgba(201,168,76,.3))}
+
+/* PHASE HEADERS */
+.phase-header{text-align:center;margin:2rem 0 1rem;position:relative}
+.phase-title{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--g);
+  display:inline-block;padding:.4rem 1.5rem;
+  border:1px solid rgba(201,168,76,.3);border-radius:20px;
+  background:rgba(201,168,76,.08)}
+
+/* FOOTER */
+.footer{text-align:center;padding:2rem;color:var(--muted);font-size:.78rem;position:relative;z-index:10}
+.footer span{color:var(--g)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ÉTOILES -->
+<div class="stars" id="stars"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-badge">⚔️ VIVACOEUR IA — PROGRAMME OFFICIEL</div>
+  <h1>Les 12 Mondes du Royaume</h1>
+  <p>Chaque Héros traverse 12 transformations. 12 niveaux de puissance. 12 entreprises créées.</p>
+</div>
+
+<!-- LUNARIA -->
+<div style="position:relative;z-index:10;padding:0 1rem">
+<div class="lunaria-box">
+  <div class="lunaria-emoji">🔮</div>
+  <div class="lunaria-name">Lunaria Cœur-Brillant — Gardienne des Portes Lumineuses</div>
+  <div class="lunaria-msg">« Chaque dessin est une porte. Chaque idée est une lumière. Chaque enfant est un créateur. Je suis là pour vous guider à travers les 12 Mondes. »</div>
+  <div style="font-size:.7rem;color:rgba(201,168,76,.6);margin-top:.6rem">✨ Personnage créé d'après un dessin original de Trinity Lévesque</div>
+</div>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline-bar">
+  <div class="tl-track" id="tl-track"></div>
+</div>
+
+<!-- MONDES -->
+<div class="path-container">
+  <div class="phase-header"><span class="phase-title">⚡ PHASE 1 — JE DÉCOUVRE (Mondes 1-3)</span></div>
+  <div class="worlds-grid" id="grid-1"></div>
+
+  <div class="phase-header"><span class="phase-title">🔥 PHASE 2 — JE CONSTRUIS (Mondes 4-6)</span></div>
+  <div class="worlds-grid" id="grid-2"></div>
+
+  <div class="phase-header"><span class="phase-title">⚔️ PHASE 3 — JE SURMONTE (Mondes 7-9)</span></div>
+  <div class="worlds-grid" id="grid-3"></div>
+
+  <div class="phase-header"><span class="phase-title">👑 PHASE 4 — JE RÈGNE (Mondes 10-12)</span></div>
+  <div class="worlds-grid" id="grid-4"></div>
+</div>
+
+<div class="footer">
+  ⚔️ <span>ViVaCoeur IA</span> · Programme créé par Denise Lévesque · Personnage Lunaria par <span>Trinity Lévesque</span>
+</div>
+
+<script>
+const MONDES = [
+  {
+    num:1, emoji:'🔥', titre:"L'Éveil", sous:"Qui suis-je vraiment ?",
+    couleur:'#5B2D8E', bg:'linear-gradient(135deg,#3E1E70,#5B2D8E)',
+    animal:'🐺 Bébé Loup Courageux', boss:'👹 La Peur de Commencer',
+    artefact:'✨ Premier Produit Canva', entreprise:'⚒️ La Forge du Débutant',
+    mission:"L'élève découvre son univers entrepreneurial. Il choisit son thème, son nom d'entreprise, et crée son premier produit simple. Il rencontre la Gardienne et reçoit son animal compagnon.",
+    script:"« Bienvenue dans le Royaume. Vous ne commencez pas un cours — vous entrez dans un univers. À partir de maintenant, vous êtes des Héros en création. Et moi... je suis la Gardienne du Royaume. »",
+    recompenses:['+10 XP','Bébé Loup Débloqué','Titre : Héros Éveillé','Artefact : Premier Produit'],
+    jeune:"Références gaming directes. Défi immédiat. Beaucoup d'énergie.",
+    aine:"Expliquer chaque terme. Valoriser l'expérience de vie. Rassurer souvent.",
+    phase:1
+  },
+  {
+    num:2, emoji:'✨', titre:"Les Artefacts", sous:"Ce que je crée",
+    couleur:'#1565C0', bg:'linear-gradient(135deg,#0D47A1,#1565C0)',
+    animal:'🦅 Aigle Créateur', boss:'👹 La Peur de la Création',
+    artefact:'🎨 Collection de 3 Produits', entreprise:'🏺 L\'Atelier des Artefacts',
+    mission:"L'élève approfondit sa création. Il produit 3 artefacts différents avec son identité visuelle. Il apprend à utiliser Canva de façon avancée et découvre sa signature créative unique.",
+    script:"« Chaque héros possède des artefacts magiques. Les vôtres sont vos créations. Aujourd'hui, vous allez forger non pas un — mais trois artefacts. Chacun plus puissant que le précédent. »",
+    recompenses:['+15 XP','Aigle Débloqué','Titre : Forger d\'Artefacts','Collection de 3 Produits'],
+    jeune:"Gamifier la création — scores, défis, vitesse.",
+    aine:"Montrer des exemples très concrets. Avancer pas à pas.",
+    phase:1
+  },
+  {
+    num:3, emoji:'🌈', titre:"Les Possibles", sous:"Ce que je peux devenir",
+    couleur:'#00695C', bg:'linear-gradient(135deg,#004D40,#00695C)',
+    animal:'🦋 Papillon de la Vision', boss:'👹 La Peur de Rêver Grand',
+    artefact:'📋 Plan de Vision Personnelle', entreprise:'🌈 Le Studio des Possibles',
+    mission:"L'élève explore ses possibilités infinies. Il crée son plan de vision entrepreneuriale à 12 mois. Il identifie 3 marchés potentiels et choisit sa direction principale.",
+    script:"« Il existe une version de vous qui a déjà réussi. Une version qui a surmonté toutes les peurs. Cette version — elle vous attend de l'autre côté de vos limites. Aujourd'hui, on la rencontre. »",
+    recompenses:['+15 XP','Papillon Débloqué','Titre : Visionnaire','Plan Vision 12 mois'],
+    jeune:"Les faire rêver GRAND. Pas de limites. Tout est possible.",
+    aine:"Ancrer dans la réalité. Vision réaliste mais ambitieuse.",
+    phase:1
+  },
+  {
+    num:4, emoji:'⚒️', titre:"La Forge", sous:"Mon premier produit vendu",
+    couleur:'#B71C1C', bg:'linear-gradient(135deg,#7B0000,#B71C1C)',
+    animal:'🐻 Ours Bâtisseur', boss:'👹 La Peur de Vendre',
+    artefact:'💰 Première Vente Réelle', entreprise:'⚒️ La Grande Forge',
+    mission:"L'élève fait SA PREMIÈRE VRAIE VENTE. Pas simulée. Réelle. Argent encaissé. Il apprend le pitch en 60 secondes, gère les objections et encaisse son premier paiement.",
+    script:"« Aujourd'hui est le jour le plus important du programme. Pas le plus facile — le plus important. Parce qu'aujourd'hui, vous allez encaisser votre premier vrai dollar d'entrepreneur. »",
+    recompenses:['+20 XP','Ours Débloqué','Titre : Vendeur du Royaume','Première Vente Encaissée'],
+    jeune:"Compétition saine — qui vend en premier ? Énergie de défi.",
+    aine:"Beaucoup de pratique de pitch. Scripts mot à mot. Jeux de rôles.",
+    phase:2
+  },
+  {
+    num:5, emoji:'💎', titre:"La Maîtrise", sous:"Améliorer et perfectionner",
+    couleur:'#4A148C', bg:'linear-gradient(135deg,#2E006C,#4A148C)',
+    animal:'🦁 Lion de la Maîtrise', boss:'👹 La Peur de l\'Imperfection',
+    artefact:'💎 Produit Premium Finalisé', entreprise:'💎 L\'Académie de la Maîtrise',
+    mission:"L'élève améliore et perfectionne son produit principal. Il apprend les retours clients, l'itération rapide et la notion de version 2.0. Il produit son meilleur artefact à ce jour.",
+    script:"« Un héros ne s'arrête pas à la première victoire. Il revient. Il analyse. Il améliore. La maîtrise n'est pas une destination — c'est une habitude quotidienne. »",
+    recompenses:['+20 XP','Lion Débloqué','Titre : Maître Créateur','Produit Premium'],
+    jeune:"Challengez leur créativité — peuvent-ils faire mieux ?",
+    aine:"Valoriser l'amélioration progressive. Chaque version est une victoire.",
+    phase:2
+  },
+  {
+    num:6, emoji:'🤝', titre:"Les Alliances", sous:"Comprendre mon client",
+    couleur:'#1B5E20', bg:'linear-gradient(135deg,#003300,#1B5E20)',
+    animal:'🐬 Dauphin des Alliances', boss:'👹 La Peur du Rejet Client',
+    artefact:'👤 Avatar Client Complet', entreprise:'🤝 Le Temple des Alliances',
+    mission:"L'élève crée son avatar client parfait. Il conduit 5 vrais entretiens de découverte. Il comprend profondément les douleurs de ses clients et ajuste son offre en conséquence.",
+    script:"« Votre produit le plus parfait ne vaut rien si personne ne le veut. Aujourd'hui, on arrête de deviner. On va chercher la vérité directement à la source — chez vos clients. »",
+    recompenses:['+20 XP','Dauphin Débloqué','Titre : Allié du Client','5 Entretiens Réalisés'],
+    jeune:"Entretiens par messages/DM — canal naturel pour eux.",
+    aine:"Entretiens en personne ou par téléphone — plus confortable.",
+    phase:2
+  },
+  {
+    num:7, emoji:'🌀', titre:"Les Portails", sous:"Deuxième entreprise lancée",
+    couleur:'#E65100', bg:'linear-gradient(135deg,#BF360C,#E65100)',
+    animal:'🐉 Dragon des Portails', boss:'👹 La Peur de Grandir',
+    artefact:'🚪 Deuxième Entreprise Active', entreprise:'🌀 Le Nexus des Portails',
+    mission:"L'élève lance sa DEUXIÈME entreprise — plus ambitieuse. Il applique tout ce qu'il a appris et ouvre un nouveau portail vers un nouveau marché. La synergie entre les deux entreprises est explorée.",
+    script:"« Vous avez prouvé que vous pouviez créer une entreprise. Maintenant — est-ce que vous pouvez en créer deux ? Parce que les vrais entrepreneurs ne s'arrêtent pas à une porte. Ils ouvrent tous les portails. »",
+    recompenses:['+25 XP','Dragon Débloqué','Titre : Ouvreur de Portails','2e Entreprise Lancée'],
+    jeune:"Excitation du nouveau — ils adorent les nouvelles aventures.",
+    aine:"Bien ancrer la 1ère avant d'en ouvrir une 2ème. Rassurer.",
+    phase:3
+  },
+  {
+    num:8, emoji:'💎', titre:"Les Cristaux", sous:"Organisation et clarté",
+    couleur:'#006064', bg:'linear-gradient(135deg,#004040,#006064)',
+    animal:'🦉 Hibou Sage des Cristaux', boss:'👹 La Peur du Chaos',
+    artefact:'📊 Système d\'Organisation Complet', entreprise:'💎 Le Palais des Cristaux',
+    mission:"L'élève structure et organise ses deux entreprises. Il crée ses systèmes — comptabilité basique, calendrier de contenu, suivi clients. La clarté remplace le chaos.",
+    script:"« Un royaume sans organisation est un royaume qui s'effondre. Aujourd'hui, on construit les fondations solides. Les cristaux de la clarté vont illuminer tout votre royaume. »",
+    recompenses:['+20 XP','Hibou Débloqué','Titre : Architecte du Royaume','Système Complet'],
+    jeune:"Apps et outils numériques — Notion, Trello, automatisation.",
+    aine:"Systèmes simples sur papier d'abord. Puis outils numériques.",
+    phase:3
+  },
+  {
+    num:9, emoji:'🌑', titre:"Les Ombres", sous:"Défis et résilience",
+    couleur:'#37474F', bg:'linear-gradient(135deg,#1C2833,#37474F)',
+    animal:'🐺 Loup Adulte Résilient', boss:'👹 La Peur de l\'Échec Total',
+    artefact:'🛡️ Bouclier de Résilience', entreprise:'🌑 La Forteresse des Ombres',
+    mission:"L'élève traverse le monde le plus difficile. Il fait face à de vrais obstacles — ventes qui ne fonctionnent pas, clients difficiles, doutes profonds. Il apprend à rebondir et sort plus fort.",
+    script:"« Bienvenue dans le monde le plus important du Royaume. Pas le plus beau. Le plus important. Parce que c'est ici — dans les ombres — que les vrais héros naissent. »",
+    recompenses:['+30 XP','Loup Adulte Débloqué','Titre : Survivant des Ombres','Bouclier de Résilience'],
+    jeune:"Normaliser l'échec — même les pros échouent.",
+    aine:"Beaucoup de soutien émotionnel. Histoires de résilience inspirantes.",
+    phase:3
+  },
+  {
+    num:10, emoji:'⭐', titre:"Les Étoiles", sous:"Vision long terme",
+    couleur:'#1A237E', bg:'linear-gradient(135deg,#0D1457,#1A237E)',
+    animal:'🦄 Licorne de la Vision', boss:'👹 La Peur du Succès',
+    artefact:'⭐ Plan Stratégique 5 Ans', entreprise:'⭐ L\'Observatoire des Étoiles',
+    mission:"L'élève crée son plan stratégique à 5 ans. Il visualise son empire entrepreneurial complet. Il apprend à penser en grand tout en restant ancré dans l'action quotidienne.",
+    script:"« Vous avez survécu aux ombres. Maintenant, levez les yeux. Les étoiles ne sont pas des rêves impossibles — ce sont des destinations que les héros courageux atteignent. »",
+    recompenses:['+25 XP','Licorne Débloquée','Titre : Visionnaire des Étoiles','Plan 5 Ans'],
+    jeune:"Rêver encore plus grand — sky is the limit.",
+    aine:"Ancrer dans ce qui est réalisable. Vision noble mais réaliste.",
+    phase:4
+  },
+  {
+    num:11, emoji:'⚙️', titre:"Les Titans", sous:"Automatisation et IA",
+    couleur:'#4E342E', bg:'linear-gradient(135deg,#2C1810,#4E342E)',
+    animal:'🤖 Phoenix de l\'IA', boss:'👹 La Peur de la Technologie',
+    artefact:'⚙️ Système Automatisé Actif', entreprise:'⚙️ La Cité des Titans',
+    mission:"L'élève maîtrise l'automatisation. Il crée des systèmes qui travaillent pendant qu'il dort — n8n, Zapier, emails automatiques, tunnels de vente. Son entreprise tourne en pilote automatique.",
+    script:"« Les Titans ne travaillent pas plus fort — ils travaillent plus intelligemment. Aujourd'hui, vous allez créer votre premier système automatisé. Une machine qui génère de la valeur pendant que vous dormez. »",
+    recompenses:['+30 XP','Phoenix IA Débloqué','Titre : Titan de l\'Automatisation','Système Actif'],
+    jeune:"Ils adorent l'automatisation — leur montrer les possibilités infinies.",
+    aine:"Partir des bases. Automatisation simple d'abord. Rassurer constamment.",
+    phase:4
+  },
+  {
+    num:12, emoji:'👑', titre:"Le Trône", sous:"Couronnement du Royaume",
+    couleur:'#C9A84C', bg:'linear-gradient(135deg,#7B5A00,#C9A84C)',
+    animal:'🦁 Lion Couronné', boss:'👹 La Peur d\'Être Grand',
+    artefact:'👑 Couronne du Royaume', entreprise:'👑 Le Trône Entrepreneurial',
+    mission:"L'élève est couronné. Cérémonie officielle de fin. Il présente son empire entrepreneurial complet. Il reçoit sa Couronne du Royaume et devient officiellement Roi ou Reine de son Royaume.",
+    script:"« Vous avez traversé 11 Mondes. Vous avez vaincu 11 Boss. Vous avez créé 11 artefacts. Aujourd'hui — vous montez sur votre Trône. Non pas parce que quelqu'un vous l'a donné. Mais parce que vous l'avez mérité. »",
+    recompenses:['+100 XP','Lion Couronné','Titre : Roi/Reine du Royaume','👑 Couronne Officielle'],
+    jeune:"Célébration épique — musique, confettis virtuels, partage sur réseaux.",
+    aine:"Cérémonie émouvante. Reconnaissance du chemin parcouru. Larmes de fierté.",
+    phase:4
+  }
+];
+
+function renderStars() {
+  const stars = document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const size=Math.random()*3+1;
+    s.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
+    stars.appendChild(s);
+  }
+}
+
+function renderTimeline() {
+  const track = document.getElementById('tl-track');
+  MONDES.forEach((m,i) => {
+    const item = document.createElement('div');
+    item.className = 'tl-item';
+    item.onclick = () => scrollToWorld(m.num);
+    item.innerHTML = `<div class="tl-dot" style="background:${m.couleur}33;border-color:${m.couleur}">${m.emoji}</div><div class="tl-label">M${m.num}<br>${m.titre.split(' ')[0]}</div>`;
+    track.appendChild(item);
+    if(i < MONDES.length-1){
+      const line = document.createElement('div');
+      line.className = 'tl-line';
+      track.appendChild(line);
+    }
+  });
+}
+
+function renderWorlds() {
+  MONDES.forEach(m => {
+    const grid = document.getElementById(`grid-${m.phase}`);
+    const card = document.createElement('div');
+    card.className = 'world-card';
+    card.id = `world-${m.num}`;
+    card.style.background = m.bg;
+    card.innerHTML = `
+      <div class="wc-header" onclick="toggleWorld(${m.num})">
+        <div class="wc-num" style="background:rgba(255,255,255,.15)">${m.num}</div>
+        <div class="wc-info">
+          <div class="wc-world" style="color:${m.couleur}99">Monde ${m.num}</div>
+          <div class="wc-title">${m.emoji} ${m.titre}</div>
+          <div class="wc-sub">${m.sous}</div>
+        </div>
+        <div class="wc-toggle">▼</div>
+      </div>
+      <div class="wc-body">
+        <div class="info-grid">
+          <div class="info-box" style="background:rgba(255,255,255,.06)">
+            <div class="ib-label">🐾 Animal</div>
+            <div class="ib-value">${m.animal}</div>
+          </div>
+          <div class="info-box" style="background:rgba(255,255,255,.06)">
+            <div class="ib-label">👹 Boss</div>
+            <div class="ib-value">${m.boss}</div>
+          </div>
+          <div class="info-box" style="background:rgba(255,255,255,.06)">
+            <div class="ib-label">✨ Artefact</div>
+            <div class="ib-value">${m.artefact}</div>
+          </div>
+          <div class="info-box" style="background:rgba(255,255,255,.06)">
+            <div class="ib-label">🏭 Entreprise</div>
+            <div class="ib-value">${m.entreprise}</div>
+          </div>
+        </div>
+        <div class="mission-box">
+          <div class="mb-label">⚔️ MISSION DU MOIS</div>
+          <div class="mb-text">${m.mission}</div>
+        </div>
+        <div class="script-box">
+          <div class="sb-label">🎤 SCRIPT DE LA GARDIENNE</div>
+          <div class="sb-text">${m.script}</div>
+        </div>
+        <div class="ib-label" style="margin-bottom:.4rem">🏆 RÉCOMPENSES</div>
+        <div class="rewards-row">
+          ${m.recompenses.map(r=>`<span class="reward-badge">${r}</span>`).join('')}
+        </div>
+        <div class="age-box">
+          <div class="ab-label">💡 ADAPTATION SELON L'ÂGE</div>
+          <div class="age-row">
+            <div class="age-item"><span class="age-tag" style="color:#64B5F6">17-30</span>${m.jeune}</div>
+            <div class="age-item"><span class="age-tag" style="color:#FFD54F">55-65</span>${m.aine}</div>
+          </div>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function toggleWorld(num) {
+  const card = document.getElementById(`world-${num}`);
+  card.classList.toggle('open');
+}
+
+function scrollToWorld(num) {
+  const el = document.getElementById(`world-${num}`);
+  if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); el.classList.add('open'); }
+}
+
+renderStars();
+renderTimeline();
+renderWorlds();
+
+// Ouvrir le Monde 1 par défaut
+setTimeout(()=>toggleWorld(1), 500);
+</script>
+</body>
+</html>

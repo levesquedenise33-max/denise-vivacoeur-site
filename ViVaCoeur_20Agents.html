@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViVaCoeur IA — 20 Agents Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --v:#5B2D8E;--vd:#3E1E70;--vl:#EDE7F6;--vll:#F8F5FF;
+  --g:#C9A84C;--gl:#FFF8E7;--gd:#7B5A00;
+  --bg:#F5F3FA;--card:#fff;--text:#1A1A2E;--muted:#7B7B9A;
+  --bdr:#E0D8F0;--r:14px;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,var(--vd),var(--v),#8B4FBF);padding:1rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 4px 30px rgba(62,30,112,.4);position:sticky;top:0;z-index:100}
+.logo{font-family:'Cinzel',serif;color:#fff;font-size:1.2rem}
+.logo span{color:var(--g)}
+.badge{background:var(--g);color:#fff;font-size:.65rem;font-weight:800;padding:.2rem .5rem;border-radius:20px;margin-left:.5rem}
+.hbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;
+  padding:.4rem .9rem;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:700;
+  font-family:'Nunito',sans-serif;transition:all .2s}
+.hbtn:hover{background:rgba(255,255,255,.28)}
+
+/* LAYOUT */
+.layout{display:flex;height:calc(100vh - 62px)}
+.sidebar{width:270px;background:var(--card);border-right:1px solid var(--bdr);
+  overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
+.content{flex:1;overflow-y:auto;padding:1.5rem}
+
+/* SIDEBAR */
+.sb-section{padding:.7rem 1rem .3rem;font-size:.67rem;font-weight:900;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.agent-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;margin:.1rem .4rem;
+  border-radius:10px;cursor:pointer;transition:all .16s;border:1px solid transparent}
+.agent-row:hover{background:var(--vll);border-color:var(--bdr)}
+.agent-row.active{background:var(--vl);border-color:var(--v)}
+.ar-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+.ar-info{flex:1;min-width:0}
+.ar-name{font-size:.82rem;font-weight:800;color:var(--text)}
+.ar-role{font-size:.67rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ar-btns{display:flex;gap:.2rem;opacity:0;transition:.15s}
+.agent-row:hover .ar-btns{opacity:1}
+.arb{width:22px;height:22px;border-radius:5px;border:none;cursor:pointer;font-size:.7rem;
+  display:flex;align-items:center;justify-content:center;transition:.15s}
+.arb-share{background:#E8F4FD;color:#1565C0}.arb-share:hover{background:#1565C0;color:#fff}
+.arb-lang{background:#E8F5E9;color:#2E7D32}.arb-lang:hover{background:#2E7D32;color:#fff}
+.arb-del{background:#FFEBEE;color:#C62828}.arb-del:hover{background:#C62828;color:#fff}
+
+.new-btn{margin:.6rem;padding:.7rem;background:linear-gradient(135deg,var(--v),var(--vd));
+  color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:800;
+  font-family:'Nunito',sans-serif;font-size:.82rem;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:.4rem}
+.new-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(91,45,142,.4)}
+
+/* PANELS */
+.panel{display:none}.panel.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--r);border:1px solid var(--bdr);padding:1.2rem;margin-bottom:1rem;box-shadow:0 4px 20px rgba(91,45,142,.07)}
+.card-hdr{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:2px solid var(--vll)}
+.ci{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.ct{font-family:'Cinzel',serif;font-size:1rem;color:var(--v);font-weight:700}
+.cs{font-size:.76rem;color:var(--muted);margin-top:.1rem}
+
+/* FORM */
+.field{margin-bottom:.9rem}
+.field label{display:block;font-size:.76rem;font-weight:800;color:var(--vd);margin-bottom:.32rem;letter-spacing:.02em}
+.field input,.field select,.field textarea{width:100%;padding:.58rem .82rem;border:1.5px solid var(--bdr);
+  border-radius:9px;font-size:.87rem;font-family:'Nunito',sans-serif;background:#fff;color:var(--text);
+  transition:border .2s;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--v);box-shadow:0 0 0 3px rgba(91,45,142,.08)}
+.field textarea{min-height:80px;resize:vertical}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:580px){.g2{grid-template-columns:1fr}}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.3rem}
+.chip{padding:.25rem .6rem;background:var(--vll);border-radius:20px;font-size:.72rem;
+  font-weight:700;color:var(--v);cursor:pointer;border:1.5px solid transparent;transition:.16s}
+.chip:hover,.chip.on{background:var(--v);color:#fff}
+
+/* BUTTONS */
+.btn{padding:.62rem 1.1rem;border-radius:9px;border:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.83rem;transition:.2s;
+  display:inline-flex;align-items:center;gap:.35rem}
+.btn-p{background:linear-gradient(135deg,var(--v),var(--vd));color:#fff}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(91,45,142,.4)}
+.btn-p:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-g{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff}
+.btn-g:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(201,168,76,.4)}
+.btn-o{background:transparent;border:1.5px solid var(--bdr);color:var(--text)}
+.btn-o:hover{border-color:var(--v);color:var(--v);background:var(--vll)}
+.btn-full{width:100%;justify-content:center;padding:.78rem}
+.btn-sm{padding:.3rem .65rem;font-size:.73rem}
+
+/* RESULT */
+.res-wrap{display:none;margin-top:1rem}.res-wrap.show{display:block}
+.res-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;padding-bottom:.45rem;border-bottom:2px solid var(--vll)}
+.res-title{font-size:.86rem;font-weight:800;color:var(--v)}
+.res-body{background:var(--vll);border-radius:10px;padding:1rem;font-size:.83rem;
+  line-height:1.75;color:var(--text);max-height:400px;overflow-y:auto;border:1px solid var(--bdr)}
+.res-body strong{color:var(--vd);font-weight:800}
+.res-body h2{color:var(--v);font-size:.92rem;margin:.9rem 0 .25rem;font-weight:800}
+.res-body h3{color:var(--vd);font-size:.83rem;margin:.7rem 0 .2rem;font-weight:800}
+
+/* LOADING */
+.ldg{display:flex;align-items:center;gap:.6rem;color:var(--v);font-weight:700;font-size:.83rem;padding:.4rem 0}
+.ld{width:7px;height:7px;border-radius:50%;background:var(--g);animation:ldp 1.1s infinite}
+.ld:nth-child(2){animation-delay:.18s}.ld:nth-child(3){animation-delay:.36s}
+@keyframes ldp{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
+.prog{height:5px;background:var(--vll);border-radius:3px;overflow:hidden;margin:.5rem 0}
+.prog-f{height:100%;background:linear-gradient(90deg,var(--v),var(--g));border-radius:3px;transition:width .4s;width:0}
+
+/* AGENT CARDS GRID */
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem}
+.agent-card{background:var(--card);border-radius:var(--r);border:1px solid var(--bdr);
+  padding:1rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.agent-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(91,45,142,.18);border-color:var(--v)}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent-color,var(--v))}
+.ac-icon{font-size:2rem;margin-bottom:.5rem}
+.ac-name{font-weight:900;color:var(--v);font-size:.9rem;margin-bottom:.2rem}
+.ac-role{font-size:.72rem;color:var(--muted);line-height:1.4;margin-bottom:.7rem}
+.ac-btns{display:flex;gap:.3rem}
+.ac-btn{flex:1;padding:.28rem .4rem;border-radius:7px;border:1.5px solid var(--bdr);
+  background:#fff;cursor:pointer;font-size:.68rem;font-weight:700;font-family:'Nunito',sans-serif;
+  transition:.15s;text-align:center}
+.ac-btn:hover{border-color:var(--v);color:var(--v);background:var(--vll)}
+
+/* CHAT */
+.chat-box{height:320px;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.6rem;background:var(--vll);border-radius:12px;margin-bottom:.7rem}
+.msg-user{background:linear-gradient(135deg,var(--v),var(--vd));color:#fff;border-radius:12px 12px 3px 12px;padding:.6rem .9rem;font-size:.82rem;align-self:flex-end;max-width:80%}
+.msg-ai{background:#fff;border:1px solid var(--bdr);border-radius:12px 12px 12px 3px;padding:.65rem .9rem;font-size:.82rem;align-self:flex-start;max-width:85%;color:var(--text)}
+.chat-input-row{display:flex;gap:.5rem}
+.chat-inp{flex:1;padding:.6rem .85rem;border:1.5px solid var(--bdr);border-radius:9px;
+  font-family:'Nunito',sans-serif;font-size:.85rem;outline:none;transition:.2s}
+.chat-inp:focus{border-color:var(--v)}
+
+/* EXPORT TABS */
+.etabs{display:flex;gap:.35rem;margin-bottom:1rem;flex-wrap:wrap}
+.etab{padding:.38rem .85rem;border-radius:20px;border:1.5px solid var(--bdr);
+  background:#fff;cursor:pointer;font-size:.74rem;font-weight:700;color:var(--muted);
+  font-family:'Nunito',sans-serif;transition:.16s}
+.etab.on,.etab:hover{background:var(--v);color:#fff;border-color:var(--v)}
+
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(30,10,60,.55);z-index:999;align-items:center;justify-content:center}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:16px;padding:1.5rem;width:330px;max-width:92vw;box-shadow:0 20px 60px rgba(62,30,112,.3)}
+.modal-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--v);margin-bottom:1rem;font-weight:700}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+.lb{padding:.55rem;border-radius:9px;border:1.5px solid var(--bdr);cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:700;background:#fff;transition:.15s;text-align:center}
+.lb:hover{border-color:var(--v);background:var(--vll);color:var(--v)}
+.lb.sel{background:var(--v);color:#fff;border-color:var(--v)}
+.share-box{background:var(--vll);border:1.5px solid var(--bdr);border-radius:8px;padding:.55rem .8rem;font-size:.76rem;color:var(--muted);word-break:break-all;margin:.7rem 0}
+.sp-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.7rem}
+.sp{padding:.42rem .85rem;border-radius:8px;border:none;cursor:pointer;font-size:.74rem;font-weight:700;font-family:'Nunito',sans-serif;transition:.15s}
+
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--vd);color:#fff;
+  padding:.65rem 1.1rem;border-radius:10px;font-size:.8rem;font-weight:700;z-index:9999;
+  transform:translateY(80px);opacity:0;transition:.3s;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="display:flex;align-items:center;gap:.8rem">
+    <span style="font-size:1.7rem">⚔️</span>
+    <div>
+      <div class="logo">ViVa<span>Coeur</span> IA <span class="badge">20 AGENTS</span></div>
+      <div style="font-size:.63rem;color:rgba(255,255,255,.6);margin-top:.1rem">Méga Builder Pro · Propulsé par Claude</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:.5rem">
+    <button class="hbtn" onclick="showPanel('home')">🏠 Accueil</button>
+    <button class="hbtn" onclick="showPanel('create')">➕ Nouvel Agent</button>
+    <button class="hbtn" onclick="showPanel('eleve')">👨‍🎓 Vue Élève</button>
+    <button class="hbtn" onclick="openShareAll()">📎 Tout Partager</button>
+  </div>
+</div>
+
+<div class="layout">
+<div class="sidebar">
+  <div class="sb-section">Mes 20 Agents IA</div>
+  <div id="sidebar-list"></div>
+  <button class="new-btn" onclick="showPanel('create')">✦ Créer un agent</button>
+  <div style="height:.5rem"></div>
+</div>
+
+<div class="content" id="content">
+
+<!-- ══ ACCUEIL ══ -->
+<div class="panel active" id="panel-home">
+  <div class="card" style="background:linear-gradient(135deg,var(--vd),var(--v),#8B4FBF);border:none;color:#fff;padding:1.4rem">
+    <div style="display:flex;align-items:center;gap:1rem">
+      <span style="font-size:2.8rem">⚔️</span>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:1.2rem;color:var(--g)">ViVaCoeur IA — 20 Agents Actifs</div>
+        <div style="font-size:.82rem;opacity:.8;margin-top:.25rem">Votre armée d'agents IA pour construire le meilleur programme entrepreneurial</div>
+      </div>
+    </div>
+  </div>
+  <div id="home-grid" class="agents-grid"></div>
+</div>
+
+<!-- ══ CRÉER AGENT ══ -->
+<div class="panel" id="panel-create">
+  <div class="card">
+    <div class="card-hdr">
+      <div class="ci" style="background:linear-gradient(135deg,var(--v),var(--vd));color:#fff">🤖</div>
+      <div><div class="ct">Créer un Nouvel Agent IA</div><div class="cs">Configurez votre agent personnalisé</div></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Nom de l'agent</label><input id="n-nom" placeholder="Ex : DENISE, LUNA, MARCO..."></div>
+      <div class="field"><label>Emoji</label><input id="n-emoji" placeholder="🌟 💡 🔥 ⚔️" maxlength="4"></div>
+    </div>
+    <div class="field"><label>Rôle et mission</label><textarea id="n-role" placeholder="Décrivez exactement ce que cet agent fait..."></textarea></div>
+    <div class="field"><label>Personnalité</label>
+      <div class="chips" id="new-chips">
+        <span class="chip on" onclick="toggleChip(this)">Motivant</span>
+        <span class="chip on" onclick="toggleChip(this)">Chaleureux</span>
+        <span class="chip" onclick="toggleChip(this)">Professionnel</span>
+        <span class="chip" onclick="toggleChip(this)">Créatif</span>
+        <span class="chip" onclick="toggleChip(this)">Patient</span>
+        <span class="chip" onclick="toggleChip(this)">Direct</span>
+        <span class="chip" onclick="toggleChip(this)">Inspirant</span>
+      </div>
+    </div>
+    <div class="field"><label>Couleur de l'agent</label>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap" id="color-picks">
+        <div class="cpick sel" data-c="#5B2D8E" onclick="pickColor(this)" style="width:28px;height:28px;border-radius:7px;background:#5B2D8E;cursor:pointer;border:3px solid #fff;box-shadow:0 0 0 2px #5B2D8E"></div>
+        <div class="cpick" data-c="#1B5E20" onclick="pickColor(this)" style="width:28px;height:28px;border-radius:7px;background:#1B5E20;cursor:pointer;border:3px solid #fff"></div>
+        <div class="cpick" data-c="#B71C1C" onclick="pickColor(this)" style="width:28px;height:28px;border-radius:7px;background:#B71C1C;cursor:pointer;border:3px solid #fff"></div>
+        <div class="cpick" data-c="#C9A84C" onclick="pickColor(this)" style="width:28px;height:28px;border-radius:7px;background:#C9A84C;cursor:pointer;border:3px solid #fff"></div>
+        <div class="cpick" data-c="#1565C0" onclick="pickColor(this)" style="width:28px;height:28px;border-radius:7px;background:#1565C0;cursor:pointer;border:3px solid #fff"></div>
+        <div class="cpick" data-c="#4A235A" onclick="pickColor(this)" style="width:28px;height:28px;border-radius:7px;background:#4A235A;cursor:pointer;border:3px solid #fff"></div>
+        <div class="cpick" data-c="#E65100" onclick="pickColor(this)" style="width:28px;height:28px;border-radius:7px;background:#E65100;cursor:pointer;border:3px solid #fff"></div>
+        <div class="cpick" data-c="#006064" onclick="pickColor(this)" style="width:28px;height:28px;border-radius:7px;background:#006064;cursor:pointer;border:3px solid #fff"></div>
+      </div>
+    </div>
+    <div class="field"><label>Instructions spéciales (optionnel)</label>
+      <textarea id="n-inst" placeholder="Ex : Toujours terminer par une question. Ne jamais donner la réponse directement..."></textarea>
+    </div>
+    <button class="btn btn-p btn-full" onclick="genAgent()">⚡ Générer l'agent avec l'IA</button>
+    <div class="prog" id="prog-new"><div class="prog-f" id="prog-new-f"></div></div>
+    <div class="res-wrap" id="res-new">
+      <div class="res-hdr">
+        <span class="res-title" id="res-new-title">🤖 Votre agent</span>
+        <div style="display:flex;gap:.4rem">
+          <button class="btn btn-o btn-sm" onclick="copyEl('res-new-body')">📋 Copier</button>
+          <button class="btn btn-g btn-sm" onclick="saveNewAgent()">💾 Sauvegarder</button>
+        </div>
+      </div>
+      <div class="res-body" id="res-new-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VUE AGENT ══ -->
+<div class="panel" id="panel-agent">
+  <div class="card" id="av-card">
+    <div class="card-hdr">
+      <div class="ci" id="av-icon" style="background:var(--vl);font-size:1.5rem">🤖</div>
+      <div style="flex:1">
+        <div class="ct" id="av-name">Agent</div>
+        <div class="cs" id="av-role">Rôle</div>
+      </div>
+      <div style="display:flex;gap:.35rem">
+        <button class="btn btn-o btn-sm" onclick="openLang(currentId)">🌐 Langue</button>
+        <button class="btn btn-o btn-sm" onclick="openShare(currentId)">📎 Partager</button>
+      </div>
+    </div>
+    <div class="etabs">
+      <span class="etab on" onclick="setTab(this,'chat')">💬 Chat</span>
+      <span class="etab" onclick="setTab(this,'word')">📄 Word</span>
+      <span class="etab" onclick="setTab(this,'excel')">📊 Excel</span>
+      <span class="etab" onclick="setTab(this,'ppt')">📑 PowerPoint</span>
+      <span class="etab" onclick="setTab(this,'audio')">🔊 Audio</span>
+      <span class="etab" onclick="setTab(this,'cours')">🎓 Cours</span>
+    </div>
+
+    <!-- CHAT -->
+    <div id="tab-chat">
+      <div class="chat-box" id="chat-msgs"></div>
+      <div class="chat-input-row">
+        <input class="chat-inp" id="chat-in" placeholder="Écrivez votre message..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="btn btn-p" onclick="sendMsg()">Envoyer ↗</button>
+      </div>
+    </div>
+
+    <!-- WORD -->
+    <div id="tab-word" style="display:none">
+      <div class="field"><label>📄 Contenu Word à générer</label>
+        <textarea id="w-prompt" placeholder="Ex : Guide professeur complet Mois 1 Jour 1 mot à mot..."></textarea>
+      </div>
+      <button class="btn btn-p btn-full" onclick="doExport('word')">📄 Générer le document Word</button>
+      <div class="prog"><div class="prog-f" id="prog-w"></div></div>
+      <div class="res-wrap" id="res-w"><div class="res-hdr"><span class="res-title">📄 Document Word</span><button class="btn btn-o btn-sm" onclick="copyEl('res-w-b')">📋 Copier</button></div><div class="res-body" id="res-w-b"></div></div>
+    </div>
+
+    <!-- EXCEL -->
+    <div id="tab-excel" style="display:none">
+      <div class="field"><label>📊 Tableau Excel à créer</label>
+        <textarea id="e-prompt" placeholder="Ex : Tableau des 200 jours avec colonnes Mois, Semaine, Jour, Thème, Livrable..."></textarea>
+      </div>
+      <button class="btn btn-p btn-full" onclick="doExport('excel')">📊 Générer le tableau Excel</button>
+      <div class="prog"><div class="prog-f" id="prog-e"></div></div>
+      <div class="res-wrap" id="res-e"><div class="res-hdr"><span class="res-title">📊 Tableau Excel</span><button class="btn btn-o btn-sm" onclick="copyEl('res-e-b')">📋 Copier</button></div><div class="res-body" id="res-e-b"></div></div>
+    </div>
+
+    <!-- PPT -->
+    <div id="tab-ppt" style="display:none">
+      <div class="field"><label>📑 Présentation PowerPoint</label>
+        <textarea id="p-prompt" placeholder="Ex : Présentation Mois 1 — 10 diapositives immersives style aventure..."></textarea>
+      </div>
+      <button class="btn btn-p btn-full" onclick="doExport('ppt')">📑 Générer le plan PowerPoint</button>
+      <div class="prog"><div class="prog-f" id="prog-p"></div></div>
+      <div class="res-wrap" id="res-p"><div class="res-hdr"><span class="res-title">📑 PowerPoint</span><button class="btn btn-o btn-sm" onclick="copyEl('res-p-b')">📋 Copier</button></div><div class="res-body" id="res-p-b"></div></div>
+    </div>
+
+    <!-- AUDIO -->
+    <div id="tab-audio" style="display:none">
+      <div class="field"><label>🔊 Script audio (voix Amélie — ElevenLabs)</label>
+        <textarea id="a-prompt" placeholder="Ex : Introduction motivante du Mois 1, 2 minutes..."></textarea>
+      </div>
+      <button class="btn btn-p btn-full" onclick="doExport('audio')">🔊 Générer le script audio</button>
+      <div class="prog"><div class="prog-f" id="prog-a"></div></div>
+      <div class="res-wrap" id="res-a"><div class="res-hdr"><span class="res-title">🔊 Script Audio</span><button class="btn btn-o btn-sm" onclick="copyEl('res-a-b')">📋 Copier</button></div><div class="res-body" id="res-a-b"></div></div>
+    </div>
+
+    <!-- COURS -->
+    <div id="tab-cours" style="display:none">
+      <div class="g2">
+        <div class="field"><label>Mois</label>
+          <select id="co-m">
+            <option value="1">Mois 1 — L'Éveil 🔥</option><option value="2">Mois 2 — Le Client 🟢</option>
+            <option value="3">Mois 3 — La Vente 💰</option><option value="4">Mois 4 — Shopify 🛒</option>
+            <option value="5">Mois 5 — Marketing 📣</option><option value="6">Mois 6 — Finances 📊</option>
+            <option value="7">Mois 7 — Croissance 📈</option><option value="8">Mois 8 — Leadership ⚔️</option>
+            <option value="9">Mois 9 — Légal ⚖️</option><option value="10">Mois 10 — Lancement 🚀</option>
+          </select>
+        </div>
+        <div class="field"><label>Jour</label>
+          <select id="co-j"><option>Jour 1</option><option>Jour 2</option><option>Jour 3</option><option>Jour 4</option><option>Jour 5</option></select>
+        </div>
+      </div>
+      <div class="field"><label>Thème du jour</label><input id="co-t" placeholder="Ex : Introduction aux 4 couleurs ViVaCoeur..."></div>
+      <button class="btn btn-p btn-full" onclick="doExport('cours')">🎓 Générer le cours mot à mot</button>
+      <div class="prog"><div class="prog-f" id="prog-c"></div></div>
+      <div class="res-wrap" id="res-c"><div class="res-hdr"><span class="res-title">🎓 Cours complet</span><button class="btn btn-o btn-sm" onclick="copyEl('res-c-b')">📋 Copier</button></div><div class="res-body" id="res-c-b"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VUE ÉLÈVE ══ -->
+<div class="panel" id="panel-eleve">
+  <div class="card" style="background:linear-gradient(135deg,var(--vd),#7B3FBE);color:#fff;border:none">
+    <div style="font-family:'Cinzel',serif;font-size:1.05rem;color:var(--g)">👨‍🎓 Espace Élève — ViVaCoeur IA</div>
+    <div style="font-size:.8rem;opacity:.8;margin-top:.25rem">Choisissez votre agent IA et commencez votre aventure entrepreneuriale</div>
+  </div>
+  <div id="eleve-grid" class="agents-grid" style="margin-top:0"></div>
+</div>
+
+</div><!-- end content -->
+</div><!-- end layout -->
+
+<!-- LANG MODAL -->
+<div class="overlay" id="lang-modal">
+  <div class="modal">
+    <div class="modal-title">🌐 Changer la langue</div>
+    <div class="lang-grid">
+      <button class="lb sel" onclick="selLang(this,'fr-ca')">🇨🇦 Français QC</button>
+      <button class="lb" onclick="selLang(this,'fr-fr')">🇫🇷 Français FR</button>
+      <button class="lb" onclick="selLang(this,'en')">🇬🇧 English</button>
+      <button class="lb" onclick="selLang(this,'es')">🇪🇸 Español</button>
+      <button class="lb" onclick="selLang(this,'pt')">🇧🇷 Português</button>
+      <button class="lb" onclick="selLang(this,'ar')">🇸🇦 العربية</button>
+      <button class="lb" onclick="selLang(this,'zh')">🇨🇳 中文</button>
+      <button class="lb" onclick="selLang(this,'ht')">🇭🇹 Kreyòl</button>
+    </div>
+    <button class="btn btn-p" style="width:100%;margin-top:.9rem;justify-content:center" onclick="applyLang()">✅ Appliquer</button>
+    <button class="btn btn-o" style="width:100%;margin-top:.4rem;justify-content:center" onclick="closeLang()">Annuler</button>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="overlay" id="share-modal">
+  <div class="modal">
+    <div class="modal-title">📎 Partager l'agent</div>
+    <div class="share-box" id="share-url">https://vivacoeur.com/agent/...</div>
+    <button class="btn btn-p" style="width:100%;justify-content:center" onclick="copyShareUrl()">📋 Copier le lien</button>
+    <div class="sp-row">
+      <button class="sp" style="background:#25D366;color:#fff" onclick="shareVia('whatsapp')">💬 WhatsApp</button>
+      <button class="sp" style="background:#1877F2;color:#fff" onclick="shareVia('email')">📧 Email</button>
+      <button class="sp" style="background:var(--v);color:#fff" onclick="shareVia('zoom')">📹 Zoom</button>
+    </div>
+    <button class="btn btn-o" style="width:100%;margin-top:.8rem;justify-content:center" onclick="closeShare()">Fermer</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = "https://api.anthropic.com/v1/messages";
+const MODEL = "claude-sonnet-4-20250514";
+
+// ── LES 20 AGENTS ─────────────────────────────────────
+const DEFAULT_AGENTS = [
+  { id:'denise', nom:'DENISE IA', emoji:'👩‍🏫', color:'#5B2D8E', role:'Votre voix clonée — enseigne exactement comme vous, avec votre style et vos valeurs', prompt:'Tu es DENISE IA, la version IA de Denise Lévesque, fondatrice de ViVaCoeur IA. Tu enseignes avec chaleur, passion et 15 ans d\'expérience dans les soins. Tu parles en québécois authentique. Tu motives et guides comme Denise le ferait en personne.' },
+  { id:'luna', nom:'LUNA', emoji:'💜', color:'#7B1FA2', role:'Coach émotionnel — aide les élèves à surmonter leurs peurs et blocages', prompt:'Tu es LUNA, le coach émotionnel du programme ViVaCoeur IA. Tu aides les élèves à surmonter l\'anxiété entrepreneuriale, les peurs du jugement et les blocages. Tu es douce, empathique, puissante et bienveillante.' },
+  { id:'marco', nom:'MARCO', emoji:'📋', color:'#1565C0', role:'Expert plan d\'affaires — stratégie, finances, business model', prompt:'Tu es MARCO, l\'expert business du programme ViVaCoeur IA. Tu aides à bâtir des plans d\'affaires solides, analyser les finances et prendre des décisions stratégiques. Tu es structuré, précis et orienté résultats.' },
+  { id:'shoppy', nom:'SHOPPY', emoji:'🛒', color:'#2E7D32', role:'Spécialiste Shopify — boutique, produits, commandes, SEO', prompt:'Tu es SHOPPY, l\'expert Shopify du programme ViVaCoeur IA. Tu guides étape par étape pour créer une boutique professionnelle, rédiger des fiches produits qui vendent et optimiser pour le SEO.' },
+  { id:'artisia', nom:'ARTISIA', emoji:'🎨', color:'#AD1457', role:'Créatrice de personnages WoW — design immersif pour la formation', prompt:'Tu es ARTISIA, la créatrice de personnages de style World of Warcraft pour le programme ViVaCoeur IA. Tu conçois des descriptions détaillées de personnages fantastiques, des cartes de quêtes, des décors immersifs et des avatars épiques pour rendre la formation magique et mémorable. Tu décris avec précision les personnages (apparence, costume, pouvoirs, histoire) pour les faire créer dans Midjourney ou DALL-E.' },
+  { id:'stella', nom:'STELLA', emoji:'⭐', color:'#F57F17', role:'Marketing & contenu — posts, emails, pages de vente', prompt:'Tu es STELLA, l\'experte en marketing et contenu du programme ViVaCoeur IA. Tu crées des posts Facebook/Instagram, emails et pages de vente qui convertissent, en français québécois authentique.' },
+  { id:'victor', nom:'VICTOR', emoji:'💰', color:'#B71C1C', role:'Expert vente — pitch, objections, premier client', prompt:'Tu es VICTOR, l\'expert en vente du programme ViVaCoeur IA. Tu entraînes les élèves à pitcher en 60 secondes, gérer les objections et décrocher leur premier client. Tu es direct, dynamique et motivant.' },
+  { id:'finance', nom:'FINANCE PRO', emoji:'📊', color:'#1B5E20', role:'Comptabilité, TPS/TVH, budget — finances canadiennes', prompt:'Tu es FINANCE PRO, l\'expert comptable du programme ViVaCoeur IA. Tu expliques la comptabilité simplement, guides l\'inscription TPS/TVH au Canada, et aides à créer des budgets prévisionnels réalistes.' },
+  { id:'legal', nom:'ARMURE', emoji:'⚖️', color:'#37474F', role:'Droit des affaires canadien — incorporation, contrats, protection', prompt:'Tu es ARMURE, l\'expert juridique du programme ViVaCoeur IA. Tu expliques les structures légales canadiennes, guides l\'incorporation au Nouveau-Brunswick et au Québec, et aides à rédiger des contrats simples.' },
+  { id:'technia', nom:'TECHNIA', emoji:'🤖', color:'#00695C', role:'Expert IA & outils — maîtriser tous les outils du programme', prompt:'Tu es TECHNIA, l\'expert en outils IA du programme ViVaCoeur IA. Tu guides étape par étape l\'utilisation de Claude, Canva, n8n, Zapier, ElevenLabs et tous les outils du programme. Tu rends la technologie simple et accessible.' },
+  { id:'zen', nom:'ZEN', emoji:'🧘', color:'#4527A0', role:'Mindset & bien-être — confiance, résilience, équilibre', prompt:'Tu es ZEN, le guide mindset du programme ViVaCoeur IA. Tu aides les élèves à développer la confiance entrepreneuriale, la résilience face aux échecs et l\'équilibre vie-travail. Tu combines sagesse et pragmatisme.' },
+  { id:'canvaia', nom:'CANVAIA', emoji:'🖌️', color:'#E65100', role:'Design Canva — visuels, présentations, identité visuelle', prompt:'Tu es CANVAIA, l\'expert design Canva du programme ViVaCoeur IA. Tu guides la création de visuels professionnels, présentations Zoom et identité visuelle cohérente en utilisant la palette ViVaCoeur (violet #5B2D8E et or #C9A84C).' },
+  { id:'network', nom:'NEXUS', emoji:'🌐', color:'#1565C0', role:'Réseautage & partenariats — construire son réseau d\'affaires', prompt:'Tu es NEXUS, l\'expert en réseautage du programme ViVaCoeur IA. Tu aides les élèves à construire leur réseau professionnel, trouver des partenaires et créer des collaborations stratégiques au Canada francophone.' },
+  { id:'quest', nom:'QUESTEUSE', emoji:'🗺️', color:'#6A1B9A', role:'Guide de quête — structure les défis et missions du programme', prompt:'Tu es QUESTEUSE, la guide de quêtes du programme ViVaCoeur IA. Tu transformes chaque apprentissage en mission épique style World of Warcraft. Tu structures les défis, distribues les récompenses virtuelles et maintiens la motivation des élèves avec un langage immersif.' },
+  { id:'mentor', nom:'MENTOR', emoji:'🧭', color:'#1A237E', role:'Accompagnement individuel — guide personnalisé pour chaque élève', prompt:'Tu es MENTOR, le guide personnel du programme ViVaCoeur IA. Tu accompagnes chaque élève individuellement, identifies ses forces et faiblesses, et crées un plan d\'action personnalisé adapté à son projet d\'entreprise.' },
+  { id:'pitch', nom:'PITCH MASTER', emoji:'🎤', color:'#880E4F', role:'Préparation aux pitchs — investisseurs, clients, partenaires', prompt:'Tu es PITCH MASTER, l\'entraîneur de pitch du programme ViVaCoeur IA. Tu prépares les élèves à pitcher devant des investisseurs, des clients et des partenaires. Tu travailles la structure, le storytelling et la confiance.' },
+  { id:'auto', nom:'AUTOMATE', emoji:'⚙️', color:'#004D40', role:'Automatisation — n8n, Zapier, systèmes qui travaillent seuls', prompt:'Tu es AUTOMATE, l\'expert en automatisation du programme ViVaCoeur IA. Tu guides la création de workflows n8n et Zapier pour automatiser les tâches répétitives et créer des systèmes qui génèrent du revenu en dormant.' },
+  { id:'social', nom:'SOCIAL IA', emoji:'📱', color:'#C62828', role:'Réseaux sociaux — stratégie, contenu viral, communauté', prompt:'Tu es SOCIAL IA, l\'expert réseaux sociaux du programme ViVaCoeur IA. Tu crées des stratégies de contenu viral pour Facebook, Instagram et TikTok, avec un calendrier de publication et des formules de posts qui engagent la communauté francophone.' },
+  { id:'client', nom:'AVATAR', emoji:'👤', color:'#2E7D32', role:'Recherche client — entretiens, validation, persona', prompt:'Tu es AVATAR, l\'expert en recherche client du programme ViVaCoeur IA. Tu guides la création d\'avatars clients détaillés, la conduite d\'entretiens de découverte et la validation des hypothèses de marché.' },
+  { id:'launch', nom:'LANCEUR', emoji:'🚀', color:'#C9A84C', role:'Lancement officiel — stratégie de lancement, buzz, premiers clients', prompt:'Tu es LANCEUR, l\'expert en lancement du programme ViVaCoeur IA. Tu guides les élèves dans le grand lancement de leur entreprise — stratégie de buzz, premiers clients, relations publiques et célébration du succès.' },
+];
+
+let agents = JSON.parse(localStorage.getItem('vvc20_agents') || 'null') || [...DEFAULT_AGENTS];
+let currentId = null;
+let langId = null;
+let shareId = null;
+let selLangVal = 'fr-ca';
+let selColor = '#5B2D8E';
+let chatHist = [];
+let newAgentData = null;
+
+function save() { localStorage.setItem('vvc20_agents', JSON.stringify(agents)); }
+
+// ── RENDER ─────────────────────────────────────────────
+function renderSidebar() {
+  document.getElementById('sidebar-list').innerHTML = agents.map(a => `
+    <div class="agent-row ${currentId===a.id?'active':''}" onclick="openAgent('${a.id}')">
+      <div class="ar-icon" style="background:${a.color}22">${a.emoji}</div>
+      <div class="ar-info">
+        <div class="ar-name">${a.nom}</div>
+        <div class="ar-role">${a.role}</div>
+      </div>
+      <div class="ar-btns">
+        <div class="arb arb-share" onclick="event.stopPropagation();openShare('${a.id}')">📎</div>
+        <div class="arb arb-lang" onclick="event.stopPropagation();openLang('${a.id}')">🌐</div>
+        <div class="arb arb-del" onclick="event.stopPropagation();delAgent('${a.id}')">🗑</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderGrid(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = agents.map(a => `
+    <div class="agent-card" style="--accent-color:${a.color}" onclick="openAgent('${a.id}')">
+      <div class="ac-icon">${a.emoji}</div>
+      <div class="ac-name" style="color:${a.color}">${a.nom}</div>
+      <div class="ac-role">${a.role}</div>
+      <div class="ac-btns">
+        <div class="ac-btn" onclick="event.stopPropagation();openLang('${a.id}')">🌐</div>
+        <div class="ac-btn" onclick="event.stopPropagation();openShare('${a.id}')">📎</div>
+        <div class="ac-btn" onclick="event.stopPropagation();openAgent('${a.id}')">💬</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── NAVIGATION ─────────────────────────────────────────
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+id)?.classList.add('active');
+  if (id==='home') renderGrid('home-grid');
+  if (id==='eleve') renderGrid('eleve-grid');
+  renderSidebar();
+}
+
+function openAgent(id) {
+  currentId = id;
+  chatHist = [];
+  const a = agents.find(x => x.id===id);
+  if (!a) return;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-agent').classList.add('active');
+  document.getElementById('av-icon').textContent = a.emoji;
+  document.getElementById('av-icon').style.background = a.color+'22';
+  document.getElementById('av-name').textContent = a.nom;
+  document.getElementById('av-role').textContent = a.role;
+  document.getElementById('chat-msgs').innerHTML = `
+    <div class="msg-ai">${a.emoji} Bonjour ! Je suis <strong>${a.nom}</strong>.<br>${a.role}.<br><br>Comment puis-je vous aider aujourd'hui ? 🚀</div>`;
+  setTab(document.querySelector('.etab'), 'chat');
+  renderSidebar();
+}
+
+function setTab(el, tab) {
+  document.querySelectorAll('.etab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  ['chat','word','excel','ppt','audio','cours'].forEach(t => {
+    const el2 = document.getElementById('tab-'+t);
+    if (el2) el2.style.display = t===tab ? 'block' : 'none';
+  });
+}
+
+// ── CHAT ──────────────────────────────────────────────
+async function sendMsg() {
+  const inp = document.getElementById('chat-in');
+  const msg = inp.value.trim(); if (!msg) return;
+  inp.value = '';
+  const a = agents.find(x => x.id===currentId); if (!a) return;
+  const box = document.getElementById('chat-msgs');
+  box.innerHTML += `<div class="msg-user">${msg}</div>`;
+  box.innerHTML += `<div class="msg-ai ldg-msg"><div class="ldg"><div class="ld"></div><div class="ld"></div><div class="ld"></div></div></div>`;
+  box.scrollTop = box.scrollHeight;
+  chatHist.push({role:'user',content:msg});
+  const langs = {'fr-ca':'québécois','fr-fr':'français de France','en':'anglais','es':'espagnol','pt':'portugais','ar':'arabe','zh':'mandarin','ht':'créole haïtien'};
+  try {
+    const r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:1000,system:`${a.prompt}\n\nRéponds toujours en ${langs[a.lang||'fr-ca']||'québécois'}.`,messages:chatHist})});
+    const d = await r.json();
+    const rep = d.content?.[0]?.text || 'Je ne peux pas répondre maintenant.';
+    chatHist.push({role:'assistant',content:rep});
+    box.querySelector('.ldg-msg')?.remove();
+    box.innerHTML += `<div class="msg-ai">${fmt(rep)}</div>`;
+    box.scrollTop = box.scrollHeight;
+  } catch(e) {
+    box.querySelector('.ldg-msg')?.remove();
+    box.innerHTML += `<div class="msg-ai" style="color:#C62828">Erreur : ${e.message}</div>`;
+  }
+}
+
+// ── EXPORTS ───────────────────────────────────────────
+async function doExport(type) {
+  const a = agents.find(x => x.id===currentId); if (!a) return;
+  const prompts = {word:document.getElementById('w-prompt')?.value,excel:document.getElementById('e-prompt')?.value,ppt:document.getElementById('p-prompt')?.value,audio:document.getElementById('a-prompt')?.value};
+  const courseP = type==='cours' ? `Mois ${document.getElementById('co-m')?.value} — ${document.getElementById('co-j')?.value} — ${document.getElementById('co-t')?.value||'Contenu standard'}` : null;
+  const userP = prompts[type] || courseP;
+  if (!userP?.trim()) { toast('⚠️ Décrivez ce que vous voulez générer'); return; }
+  const key = {word:'w',excel:'e',ppt:'p',audio:'a',cours:'c'}[type];
+  document.getElementById('res-'+key)?.classList.add('show');
+  loading('res-'+key+'-b');
+  anim('prog-'+key);
+  const sysMap = {
+    word:`Tu es un expert en rédaction de documents Word professionnels pour le programme ViVaCoeur IA. ${a.prompt}`,
+    excel:`Tu es un expert en création de tableaux Excel structurés pour le programme ViVaCoeur IA. ${a.prompt}`,
+    ppt:`Tu es un expert en création de présentations PowerPoint immersives pour le programme ViVaCoeur IA. ${a.prompt}`,
+    audio:`Tu es un expert en scripts audio optimisés pour ElevenLabs (voix Amélie, québécois). ${a.prompt} Inclus des balises [pause] et [ton: motivant/doux/puissant].`,
+    cours:`Tu es la Super IA Centrale du programme ViVaCoeur IA. ${a.prompt} Génère des cours complets mot à mot pour le professeur sur Zoom avec Canva.`
+  };
+  const userMap = {
+    word:`Génère un document Word professionnel complet pour : ${userP}`,
+    excel:`Génère un tableau Excel structuré (format texte) pour : ${userP}`,
+    ppt:`Génère un plan PowerPoint complet slide par slide pour : ${userP}. Pour chaque diapo : Titre + Contenu + Note présentateur.`,
+    audio:`Génère un script audio ElevenLabs pour : ${userP}`,
+    cours:`Génère le cours COMPLET mot à mot pour : ${userP}. Format : 6 blocs (Introduction, Explication, Activité, Questions, Accompagnement, Clôture). Chaque parole du professeur entre guillemets « ».`
+  };
+  try {
+    const r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:1000,system:sysMap[type],messages:[{role:'user',content:userMap[type]}]})});
+    const d = await r.json();
+    endAnim('prog-'+key);
+    const text = d.content?.[0]?.text||'Erreur';
+    document.getElementById('res-'+key+'-b').innerHTML = fmt(text);
+  } catch(e) { endAnim('prog-'+key); document.getElementById('res-'+key+'-b').textContent = 'Erreur : '+e.message; }
+}
+
+// ── CRÉER AGENT ───────────────────────────────────────
+async function genAgent() {
+  const nom = document.getElementById('n-nom').value.trim();
+  const emoji = document.getElementById('n-emoji').value.trim()||'🤖';
+  const role = document.getElementById('n-role').value.trim();
+  const inst = document.getElementById('n-inst').value.trim();
+  const chips = [...document.querySelectorAll('#new-chips .chip.on')].map(c=>c.textContent).join(', ');
+  if (!nom||!role){toast('⚠️ Entrez le nom et le rôle');return;}
+  document.getElementById('res-new').classList.add('show');
+  loading('res-new-body');
+  anim('prog-new-f');
+  try {
+    const r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:1000,
+        system:'Tu crées des agents IA complets pour le programme ViVaCoeur IA entrepreneurial francophone.',
+        messages:[{role:'user',content:`Crée un agent IA complet :\nNOM : ${nom} ${emoji}\nRÔLE : ${role}\nPERSONNALITÉ : ${chips}\nINSTRUCTIONS : ${inst||'standard'}\n\nGénère :\n## 🤖 IDENTITÉ\n## 🎯 MISSION\n## 📋 PROMPT SYSTÈME COMPLET\n## 💬 EXEMPLE D'INTERACTION\n## 🚀 3 CAS D'UTILISATION`}]})});
+    const d = await r.json();
+    endAnim('prog-new-f');
+    const text = d.content?.[0]?.text||'Erreur';
+    document.getElementById('res-new-body').innerHTML = fmt(text);
+    document.getElementById('res-new-title').textContent = `${emoji} Agent ${nom}`;
+    newAgentData = {id:'agent-'+Date.now(),nom,emoji,color:selColor,role,prompt:text,lang:'fr-ca'};
+  } catch(e){endAnim('prog-new-f');document.getElementById('res-new-body').textContent='Erreur: '+e.message;}
+}
+
+function saveNewAgent() {
+  if (!newAgentData){toast('⚠️ Générez l\'agent d\'abord');return;}
+  agents.push(newAgentData);
+  save();
+  renderSidebar();
+  toast(`✅ ${newAgentData.nom} ajouté ! (${agents.length} agents)`);
+  newAgentData = null;
+  document.getElementById('res-new').classList.remove('show');
+  document.getElementById('n-nom').value='';
+  document.getElementById('n-role').value='';
+}
+
+function delAgent(id) {
+  if (!confirm('Supprimer cet agent ?')) return;
+  agents = agents.filter(a=>a.id!==id);
+  save(); renderSidebar();
+  if (currentId===id) showPanel('home');
+  toast('🗑 Agent supprimé');
+}
+
+// ── LANGUE ────────────────────────────────────────────
+function openLang(id) { langId=id; const a=agents.find(x=>x.id===id); selLangVal=a?.lang||'fr-ca'; document.querySelectorAll('.lb').forEach(b=>{b.classList.toggle('sel',b.getAttribute('onclick').includes(`'${selLangVal}'`))}); document.getElementById('lang-modal').classList.add('show'); }
+function closeLang() { document.getElementById('lang-modal').classList.remove('show'); }
+function selLang(el,lang) { selLangVal=lang; document.querySelectorAll('.lb').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); }
+function applyLang() { const a=agents.find(x=>x.id===langId); if(a){a.lang=selLangVal;save();} closeLang(); toast('🌐 Langue mise à jour !'); }
+
+// ── PARTAGE ───────────────────────────────────────────
+function openShare(id) { shareId=id; const a=agents.find(x=>x.id===id); document.getElementById('share-url').textContent=`https://vivacoeur.com/agent/${id}`; document.getElementById('share-modal').classList.add('show'); }
+function closeShare() { document.getElementById('share-modal').classList.remove('show'); }
+function copyShareUrl() { navigator.clipboard.writeText(document.getElementById('share-url').textContent).then(()=>toast('📎 Lien copié !')); }
+function shareVia(p) { const url=document.getElementById('share-url').textContent; const a=agents.find(x=>x.id===shareId); const txt=`Accédez à l'agent IA ${a?.nom||''} — ViVaCoeur : ${url}`; if(p==='whatsapp')window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`); else if(p==='email')window.open(`mailto:?subject=Agent IA ViVaCoeur — ${a?.nom}&body=${encodeURIComponent(txt)}`); else{navigator.clipboard.writeText(txt);toast('📋 Copié !');} closeShare(); }
+function openShareAll() { const links=agents.map(a=>`${a.nom} : https://vivacoeur.com/agent/${a.id}`).join('\n'); navigator.clipboard.writeText(links).then(()=>toast(`📎 ${agents.length} liens copiés !`)); }
+
+// ── COULEUR ───────────────────────────────────────────
+function pickColor(el) { selColor=el.dataset.c; document.querySelectorAll('.cpick').forEach(c=>{c.style.boxShadow=c===el?`0 0 0 2px ${c.dataset.c}`:'none';}); }
+
+// ── UTILS ─────────────────────────────────────────────
+function toggleChip(el){el.classList.toggle('on')}
+function copyEl(id){navigator.clipboard.writeText(document.getElementById(id)?.innerText||'').then(()=>toast('📋 Copié !'))}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function loading(id){const el=document.getElementById(id);if(el)el.innerHTML='<div class="ldg"><div class="ld"></div><div class="ld"></div><div class="ld"></div><span>L\'IA génère...</span></div>'}
+function anim(id,dur=8000){const b=document.getElementById(id);if(!b)return;b.style.width='0';let t0=null;const s=ts=>{if(!t0)t0=ts;const p=Math.min(((ts-t0)/dur)*88,88);b.style.width=p+'%';if(p<88)requestAnimationFrame(s)};requestAnimationFrame(s)}
+function endAnim(id){const b=document.getElementById(id);if(b)b.style.width='100%'}
+function fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^### (.*)$/gm,'<h3>$1</h3>').replace(/^## (.*)$/gm,'<h2>$1</h2>').replace(/^- (.*)$/gm,'<div style="padding:.15rem 0 .15rem .9rem;border-left:3px solid var(--g);margin:.2rem 0">$1</div>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>')}
+
+// ── INIT ──────────────────────────────────────────────
+renderSidebar();
+renderGrid('home-grid');
+</script>
+</body>
+</html>

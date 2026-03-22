@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViVaCoeur IA — Tableau de Bord Professeur</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --v:#5B2D8E;--vd:#3E1E70;--vl:#EDE7F6;--vll:#F8F5FF;
+  --g:#C9A84C;--gl:#FFF8E7;--gd:#7B5A00;
+  --bg:#0D0A1A;--card:#1A1030;--text:#F0E8FF;--muted:#9B8EC4;
+  --bdr:#3D2A6E;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at top,#1A0A3E 0%,#0D0A1A 70%)}
+
+/* ÉTOILES */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+
+/* HEADER */
+.header{position:relative;z-index:10;text-align:center;padding:2rem 1rem 1rem}
+.logo{font-family:'Cinzel',serif;font-size:clamp(1.4rem,4vw,2rem);
+  background:linear-gradient(135deg,#fff,var(--g),#C9A4FF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem}
+.header-sub{font-size:.82rem;color:var(--muted)}
+
+/* JOURS NAVIGATION */
+.jours-nav{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;
+  padding:1rem;position:relative;z-index:10}
+.jour-btn{
+  width:70px;height:70px;border-radius:14px;border:2px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.05);cursor:pointer;transition:all .25s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'Nunito',sans-serif;color:var(--muted);
+}
+.jour-btn:hover{transform:translateY(-4px);border-color:var(--v);background:rgba(91,45,142,.3)}
+.jour-btn.active{border-color:var(--g);background:linear-gradient(135deg,rgba(91,45,142,.6),rgba(62,30,112,.8));
+  color:#fff;transform:translateY(-4px);box-shadow:0 8px 30px rgba(201,168,76,.3)}
+.jour-btn.done{border-color:#2E7D32;background:rgba(46,125,50,.2)}
+.jb-emoji{font-size:1.4rem;margin-bottom:.2rem}
+.jb-label{font-size:.65rem;font-weight:900;letter-spacing:.05em}
+.jb-jour{font-size:.6rem;opacity:.7}
+
+/* CONTENU JOUR */
+.content{max-width:800px;margin:0 auto;padding:0 1rem 3rem;position:relative;z-index:10}
+
+/* CARTE JOUR */
+.jour-card{display:none;animation:fadeIn .4s ease}
+.jour-card.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER JOUR */
+.jour-header{border-radius:16px;padding:1.5rem;margin-bottom:1rem;position:relative;overflow:hidden}
+.jh-mois{font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.8;margin-bottom:.3rem}
+.jh-titre{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--g);margin-bottom:.3rem}
+.jh-sous{font-size:.85rem;opacity:.8}
+.jh-infos{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:.8rem}
+.jh-badge{padding:.25rem .7rem;border-radius:20px;font-size:.7rem;font-weight:800;
+  background:rgba(255,255,255,.15);color:#fff}
+
+/* BLOCS */
+.blocs-list{display:flex;flex-direction:column;gap:.7rem}
+
+.bloc{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.1);
+  transition:all .2s;cursor:pointer}
+.bloc:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.bloc.expanded .bloc-body{display:block}
+.bloc.completed{opacity:.7;border-color:#2E7D32}
+.bloc.completed .bloc-header{background:rgba(46,125,50,.3) !important}
+
+.bloc-header{padding:.9rem 1.1rem;display:flex;align-items:center;gap:.8rem}
+.bh-icon{font-size:1.5rem;flex-shrink:0}
+.bh-info{flex:1}
+.bh-time{font-size:.65rem;font-weight:900;opacity:.7;margin-bottom:.1rem;letter-spacing:.05em}
+.bh-titre{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700}
+.bh-dur{font-size:.68rem;opacity:.7;margin-top:.1rem}
+.bh-actions{display:flex;gap:.4rem;align-items:center}
+.bh-toggle{font-size:.8rem;opacity:.5;transition:.2s}
+.bloc.expanded .bh-toggle{transform:rotate(180deg)}
+
+.check-btn{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.3);
+  background:transparent;cursor:pointer;font-size:.8rem;color:#fff;
+  display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0}
+.check-btn:hover{border-color:#2E7D32;background:rgba(46,125,50,.3)}
+.bloc.completed .check-btn{background:#2E7D32;border-color:#2E7D32}
+
+.bloc-body{display:none;padding:0 1.1rem 1.1rem;border-top:1px solid rgba(255,255,255,.08)}
+
+/* SEGMENTS */
+.segment{margin:.8rem 0;border-radius:10px;overflow:hidden}
+
+.seg-paroles{background:rgba(91,45,142,.25);border-left:4px solid var(--v);border-radius:0 10px 10px 0;padding:.8rem 1rem}
+.seg-canva{background:rgba(201,168,76,.15);border-left:4px solid var(--g);border-radius:0 10px 10px 0;padding:.8rem 1rem}
+.seg-activite{background:rgba(46,125,50,.2);border-left:4px solid #2E7D32;border-radius:0 10px 10px 0;padding:.8rem 1rem}
+.seg-emotion{background:rgba(194,24,91,.15);border-left:4px solid #C2185B;border-radius:0 10px 10px 0;padding:.8rem 1rem}
+.seg-note{background:rgba(21,101,192,.2);border-left:4px solid #1565C0;border-radius:0 10px 10px 0;padding:.8rem 1rem}
+
+.seg-label{font-size:.6rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.8;margin-bottom:.4rem}
+.seg-text{font-size:.83rem;line-height:1.75;white-space:pre-wrap}
+.seg-text em{font-style:italic;opacity:.75}
+.seg-text strong{font-weight:900;color:var(--g)}
+
+/* MINUTEUR */
+.timer-row{display:flex;align-items:center;gap:.6rem;margin:.6rem 0;
+  background:rgba(255,255,255,.06);border-radius:8px;padding:.5rem .8rem}
+.timer-btn{padding:.3rem .7rem;border-radius:7px;border:none;cursor:pointer;
+  font-size:.72rem;font-weight:800;font-family:'Nunito',sans-serif;transition:.2s}
+.timer-start{background:var(--v);color:#fff}
+.timer-start:hover{background:var(--vd)}
+.timer-reset{background:rgba(255,255,255,.1);color:#fff}
+.timer-display{font-family:'Cinzel',serif;font-size:1rem;color:var(--g);min-width:60px;text-align:center}
+.timer-label{font-size:.72rem;color:var(--muted);flex:1}
+
+/* PROGRESS */
+.progress-section{background:rgba(255,255,255,.05);border-radius:12px;padding:1rem;margin-bottom:1rem;
+  border:1px solid rgba(255,255,255,.08)}
+.ps-title{font-size:.72rem;font-weight:900;color:var(--muted);letter-spacing:.08em;margin-bottom:.6rem}
+.ps-bar{height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;margin-bottom:.4rem}
+.ps-fill{height:100%;background:linear-gradient(90deg,var(--v),var(--g));border-radius:4px;transition:width .5s}
+.ps-stats{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted)}
+
+/* NOTES PROF */
+.notes-box{background:rgba(255,255,255,.04);border-radius:10px;padding:.8rem;
+  border:1px dashed rgba(255,255,255,.15);margin-top:.6rem}
+.notes-label{font-size:.62rem;font-weight:900;color:var(--muted);letter-spacing:.08em;margin-bottom:.4rem}
+.notes-input{width:100%;background:transparent;border:none;color:var(--text);
+  font-family:'Nunito',sans-serif;font-size:.82rem;resize:none;min-height:60px;outline:none}
+.notes-input::placeholder{color:rgba(255,255,255,.25)}
+
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--vd);color:#fff;
+  padding:.6rem 1rem;border-radius:10px;font-size:.8rem;font-weight:700;z-index:9999;
+  transform:translateY(80px);opacity:0;transition:.3s;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+
+/* TOOLBAR */
+.toolbar{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;
+  padding:.6rem 1rem;position:relative;z-index:10;
+  background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08)}
+.tb-btn{display:flex;flex-direction:column;align-items:center;gap:.2rem;
+  padding:.45rem .7rem;border-radius:10px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);cursor:pointer;transition:all .2s;
+  font-family:'Nunito',sans-serif;color:var(--text);min-width:56px}
+.tb-btn:hover{background:rgba(91,45,142,.4);border-color:var(--v);transform:translateY(-2px)}
+.tb-btn.active-mic{background:rgba(183,28,28,.4);border-color:#B71C1C;animation:pulse-red 1s infinite}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(183,28,28,.4)}50%{box-shadow:0 0 0 6px rgba(183,28,28,0)}}
+.tb-icon{font-size:1.2rem}
+.tb-label{font-size:.58rem;font-weight:800;color:var(--muted);letter-spacing:.04em;text-align:center}
+.tb-pay{background:linear-gradient(135deg,rgba(46,125,50,.4),rgba(27,94,32,.4));border-color:#2E7D32}
+.tb-pay:hover{background:linear-gradient(135deg,rgba(46,125,50,.7),rgba(27,94,32,.7))}
+
+/* MODALES */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,5,30,.75);
+  z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.show{display:flex}
+.modal{background:#1A1030;border:1px solid var(--bdr);border-radius:16px;
+  padding:1.5rem;width:100%;max-width:420px;max-height:85vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--g);
+  margin-bottom:1rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+.modal-close{float:right;background:rgba(255,255,255,.1);border:none;color:#fff;
+  width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:rgba(255,255,255,.25)}
+
+/* PAIEMENT */
+.pay-option{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;padding:1rem;margin-bottom:.7rem;cursor:pointer;transition:.2s}
+.pay-option:hover{border-color:var(--g);background:rgba(201,168,76,.1)}
+.pay-title{font-weight:900;font-size:.9rem;color:#fff;margin-bottom:.2rem}
+.pay-price{font-family:'Cinzel',serif;font-size:1.3rem;color:var(--g);font-weight:700}
+.pay-sub{font-size:.72rem;color:var(--muted);margin-top:.2rem}
+.pay-btn{width:100%;padding:.7rem;border-radius:9px;border:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;margin-top:.5rem;
+  transition:.2s}
+.pay-btn-primary{background:linear-gradient(135deg,#2E7D32,#1B5E20);color:#fff}
+.pay-btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(46,125,50,.5)}
+
+/* FICHIERS */
+.files-list{display:flex;flex-direction:column;gap:.5rem;margin:.8rem 0}
+.file-item{display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;
+  background:rgba(255,255,255,.06);border-radius:9px;border:1px solid rgba(255,255,255,.1)}
+.file-icon{font-size:1.1rem;flex-shrink:0}
+.file-name{font-size:.8rem;flex:1;word-break:break-all}
+.file-del{background:rgba(183,28,28,.3);border:none;color:#fff;border-radius:5px;
+  cursor:pointer;font-size:.7rem;padding:.2rem .4rem}
+.upload-zone{border:2px dashed rgba(255,255,255,.2);border-radius:12px;padding:1.5rem;
+  text-align:center;cursor:pointer;transition:.2s;margin:.5rem 0}
+.upload-zone:hover{border-color:var(--v);background:rgba(91,45,142,.1)}
+.upload-zone input{display:none}
+
+/* LANGUE */
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.8rem 0}
+.lang-item{padding:.6rem;border-radius:9px;border:1.5px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);cursor:pointer;text-align:center;
+  font-size:.82rem;font-weight:700;transition:.2s}
+.lang-item:hover,.lang-item.sel{background:rgba(91,45,142,.4);border-color:var(--v);color:#fff}
+
+/* MICRO / TRANSCRIPTION */
+.mic-display{background:rgba(255,255,255,.05);border-radius:10px;padding:.8rem;
+  min-height:100px;max-height:200px;overflow-y:auto;border:1px solid rgba(255,255,255,.1);
+  font-size:.85rem;line-height:1.7;margin:.6rem 0}
+.mic-interim{color:rgba(255,255,255,.5);font-style:italic}
+.mic-final{color:var(--text)}
+
+/* PARTAGE */
+.share-link{background:rgba(255,255,255,.06);border-radius:8px;padding:.6rem .8rem;
+  font-size:.75rem;color:var(--muted);word-break:break-all;margin:.6rem 0;
+  border:1px solid rgba(255,255,255,.1)}
+.share-btns{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem}
+.share-btn{padding:.4rem .8rem;border-radius:8px;border:none;cursor:pointer;
+  font-size:.75rem;font-weight:700;font-family:'Nunito',sans-serif;transition:.15s}
+
+@media(max-width:500px){.jours-nav{gap:.3rem}.jour-btn{width:58px;height:58px}
+  .toolbar{gap:.3rem}.tb-btn{min-width:48px;padding:.4rem .5rem}}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="header">
+  <div style="font-size:2.5rem;margin-bottom:.4rem">⚔️</div>
+  <div class="logo">ViVaCoeur IA — Tableau de Bord</div>
+  <div class="header-sub">La Gardienne du Royaume · Denise Levesque · Appuyez sur un jour pour commencer</div>
+</div>
+
+<!-- BARRE D'OUTILS -->
+<div class="toolbar">
+  <button class="tb-btn tb-pay" onclick="openModal('pay-modal')">
+    <span class="tb-icon">💳</span>
+    <span class="tb-label">Paiement</span>
+  </button>
+  <button class="tb-btn" onclick="openModal('files-modal')">
+    <span class="tb-icon">➕</span>
+    <span class="tb-label">Fichiers</span>
+  </button>
+  <button class="tb-btn" onclick="openModal('share-modal')">
+    <span class="tb-icon">📎</span>
+    <span class="tb-label">Partager</span>
+  </button>
+  <button class="tb-btn" onclick="openModal('lang-modal')">
+    <span class="tb-icon">🌐</span>
+    <span class="tb-label" id="lang-label">Langue</span>
+  </button>
+  <button class="tb-btn" id="mic-btn" onclick="toggleMic()">
+    <span class="tb-icon">🎤</span>
+    <span class="tb-label">Micro</span>
+  </button>
+  <button class="tb-btn" onclick="openModal('ia-modal')">
+    <span class="tb-icon">🤖</span>
+    <span class="tb-label">IA</span>
+  </button>
+</div>
+
+<!-- ══ MODAL PAIEMENT ══ -->
+<div class="modal-overlay" id="pay-modal">
+  <div class="modal">
+    <div class="modal-title">💳 Paiement ViVaCoeur IA
+      <button class="modal-close" onclick="closeModal('pay-modal')">✕</button>
+    </div>
+    <div class="pay-option">
+      <div class="pay-title">🎓 Inscription — Une seule fois</div>
+      <div class="pay-price">120 $</div>
+      <div class="pay-sub">Frais d'inscription au programme · Payable une seule fois</div>
+      <button class="pay-btn pay-btn-primary" onclick="pay(120,'inscription')">💳 Payer 120$ maintenant</button>
+    </div>
+    <div class="pay-option">
+      <div class="pay-title">📅 Frais hebdomadaires — Temps Plein</div>
+      <div class="pay-price">40 $ / semaine</div>
+      <div class="pay-sub">Payable chaque lundi avant d'entrer dans le cours</div>
+      <button class="pay-btn pay-btn-primary" onclick="pay(40,'semaine-tp')">💳 Payer 40$ cette semaine</button>
+    </div>
+    <div class="pay-option">
+      <div class="pay-title">🌙 Frais hebdomadaires — Temps Partiel</div>
+      <div class="pay-price">25 $ / semaine</div>
+      <div class="pay-sub">Payable chaque semaine avant le cours du soir</div>
+      <button class="pay-btn" style="background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff;width:100%;padding:.7rem;border-radius:9px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;margin-top:.5rem" onclick="pay(25,'semaine-tpa')">💳 Payer 25$ cette semaine</button>
+    </div>
+    <div style="font-size:.7rem;color:var(--muted);text-align:center;margin-top:.5rem">
+      🔒 Paiement sécurisé via Stripe · Reçu envoyé automatiquement
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL FICHIERS ══ -->
+<div class="modal-overlay" id="files-modal">
+  <div class="modal">
+    <div class="modal-title">➕ Ajouter des Fichiers
+      <button class="modal-close" onclick="closeModal('files-modal')">✕</button>
+    </div>
+    <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" multiple accept=".doc,.docx,.pdf,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.mp4,.mp3" onchange="handleFiles(this.files)">
+      <div style="font-size:2rem;margin-bottom:.4rem">📁</div>
+      <div style="font-size:.85rem;font-weight:700;color:var(--text)">Cliquez pour ajouter des fichiers</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:.2rem">Word · PowerPoint · Excel · PDF · Photos · Vidéos</div>
+    </div>
+    <div class="files-list" id="files-list">
+      <div style="text-align:center;color:var(--muted);font-size:.78rem;padding:.5rem">Aucun fichier ajouté</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin-top:.6rem">
+      <button style="padding:.5rem;border-radius:8px;background:rgba(21,101,192,.3);border:1px solid #1565C0;color:#90CAF9;font-size:.72rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif" onclick="document.getElementById('file-input').click()">📄 Word</button>
+      <button style="padding:.5rem;border-radius:8px;background:rgba(183,28,28,.3);border:1px solid #B71C1C;color:#EF9A9A;font-size:.72rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif" onclick="document.getElementById('file-input').click()">📑 PowerPoint</button>
+      <button style="padding:.5rem;border-radius:8px;background:rgba(91,45,142,.3);border:1px solid var(--v);color:#C9A4FF;font-size:.72rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif" onclick="document.getElementById('file-input').click()">🖼️ Photos</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL PARTAGE ══ -->
+<div class="modal-overlay" id="share-modal">
+  <div class="modal">
+    <div class="modal-title">📎 Partager ce Tableau de Bord
+      <button class="modal-close" onclick="closeModal('share-modal')">✕</button>
+    </div>
+    <div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">Partagez ce tableau avec vos élèves ou collègues :</div>
+    <div class="share-link" id="share-link-display">vivacoeur.com/tableau-de-bord</div>
+    <button class="pay-btn pay-btn-primary" onclick="copyShareLink()" style="width:100%">📋 Copier le lien</button>
+    <div class="share-btns">
+      <button class="share-btn" style="background:#25D366;color:#fff" onclick="shareVia('whatsapp')">💬 WhatsApp</button>
+      <button class="share-btn" style="background:#1877F2;color:#fff" onclick="shareVia('messenger')">📘 Messenger</button>
+      <button class="share-btn" style="background:#0A66C2;color:#fff" onclick="shareVia('email')">📧 Email</button>
+      <button class="share-btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)" onclick="copyShareLink()">📎 Copier</button>
+    </div>
+    <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.1)">
+      <div style="font-size:.72rem;font-weight:900;color:var(--muted);margin-bottom:.4rem">📱 QR CODE</div>
+      <div style="background:rgba(255,255,255,.9);border-radius:8px;padding:.5rem;text-align:center;font-size:.72rem;color:#333">
+        Générez votre QR code sur qr-code-generator.com avec le lien de votre site
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL LANGUE ══ -->
+<div class="modal-overlay" id="lang-modal">
+  <div class="modal">
+    <div class="modal-title">🌐 Changer la Langue
+      <button class="modal-close" onclick="closeModal('lang-modal')">✕</button>
+    </div>
+    <div class="lang-grid">
+      <div class="lang-item sel" id="lang-fr-ca" onclick="setLang('fr-ca',this)">🇨🇦 Français QC</div>
+      <div class="lang-item" id="lang-fr-fr" onclick="setLang('fr-fr',this)">🇫🇷 Français FR</div>
+      <div class="lang-item" id="lang-en" onclick="setLang('en',this)">🇬🇧 English</div>
+      <div class="lang-item" id="lang-es" onclick="setLang('es',this)">🇪🇸 Español</div>
+      <div class="lang-item" id="lang-pt" onclick="setLang('pt',this)">🇧🇷 Português</div>
+      <div class="lang-item" id="lang-ar" onclick="setLang('ar',this)">🇸🇦 العربية</div>
+      <div class="lang-item" id="lang-zh" onclick="setLang('zh',this)">🇨🇳 中文</div>
+      <div class="lang-item" id="lang-ht" onclick="setLang('ht',this)">🇭🇹 Kreyòl</div>
+    </div>
+    <div style="font-size:.72rem;color:var(--muted);margin-top:.5rem;text-align:center">
+      La langue change l'interface et la transcription vocale
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL MICRO ══ -->
+<div class="modal-overlay" id="mic-modal">
+  <div class="modal">
+    <div class="modal-title">🎤 Transcription Vocale
+      <button class="modal-close" onclick="closeModal('mic-modal');stopMic()">✕</button>
+    </div>
+    <div style="display:flex;gap:.5rem;margin-bottom:.6rem">
+      <button id="mic-start-btn" class="pay-btn pay-btn-primary" style="flex:1;padding:.6rem;border-radius:9px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:900;font-size:.85rem" onclick="startMicModal()">🎤 Démarrer</button>
+      <button id="mic-stop-btn" class="pay-btn" style="flex:1;padding:.6rem;border-radius:9px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:900;font-size:.85rem;background:rgba(183,28,28,.4);color:#fff;display:none" onclick="stopMic()">⏹ Arrêter</button>
+    </div>
+    <div id="mic-status" style="font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:.4rem">Cliquez Démarrer et parlez — vos paroles s'écriront ici</div>
+    <div class="mic-display" id="mic-display">
+      <span id="mic-final-text"></span>
+      <span class="mic-interim" id="mic-interim-text"></span>
+    </div>
+    <div style="display:flex;gap:.4rem;margin-top:.5rem">
+      <button onclick="copyMicText()" style="flex:1;padding:.45rem;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.75rem;font-weight:800;font-family:'Nunito',sans-serif">📋 Copier</button>
+      <button onclick="clearMic()" style="flex:1;padding:.45rem;border-radius:8px;background:rgba(183,28,28,.2);border:1px solid rgba(183,28,28,.3);color:#EF9A9A;cursor:pointer;font-size:.75rem;font-weight:800;font-family:'Nunito',sans-serif">🗑 Effacer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL IA ══ -->
+<div class="modal-overlay" id="ia-modal">
+  <div class="modal">
+    <div class="modal-title">🤖 Assistant IA ViVaCoeur
+      <button class="modal-close" onclick="closeModal('ia-modal')">✕</button>
+    </div>
+    <div id="ia-chat" style="min-height:120px;max-height:250px;overflow-y:auto;background:rgba(255,255,255,.04);border-radius:10px;padding:.7rem;margin-bottom:.6rem;font-size:.82rem;line-height:1.7;border:1px solid rgba(255,255,255,.08)">
+      <div style="color:var(--g);font-weight:700">🤖 ViVaCoeur IA est prête !</div>
+      <div style="color:var(--muted);font-size:.75rem;margin-top:.2rem">Posez votre question sur le cours, les élèves, ou demandez de l'aide.</div>
+    </div>
+    <div style="display:flex;gap:.4rem">
+      <input id="ia-input" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:9px;padding:.55rem .8rem;color:var(--text);font-family:'Nunito',sans-serif;font-size:.83rem;outline:none" placeholder="Posez votre question..." onkeydown="if(event.key==='Enter')askIA()">
+      <button onclick="askIA()" style="padding:.55rem 1rem;border-radius:9px;background:linear-gradient(135deg,var(--v),var(--vd));color:#fff;border:none;cursor:pointer;font-weight:900;font-family:'Nunito',sans-serif;font-size:.82rem">↗</button>
+    </div>
+    <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.5rem">
+      <button onclick="quickAsk('Comment gérer un élève anxieux ?')" style="padding:.25rem .5rem;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--muted);font-size:.65rem;cursor:pointer;font-family:'Nunito',sans-serif">Élève anxieux</button>
+      <button onclick="quickAsk('Donne-moi une activité pour les équipes')" style="padding:.25rem .5rem;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--muted);font-size:.65rem;cursor:pointer;font-family:'Nunito',sans-serif">Activité équipe</button>
+      <button onclick="quickAsk('Comment motiver mes élèves aujourd\'hui ?')" style="padding:.25rem .5rem;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--muted);font-size:.65rem;cursor:pointer;font-family:'Nunito',sans-serif">Motivation</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAVIGATION JOURS -->
+<div class="jours-nav" id="jours-nav"></div>
+
+<!-- CONTENU -->
+<div class="content">
+
+  <!-- PROGRESS -->
+  <div class="progress-section">
+    <div class="ps-title">PROGRESSION DU JOUR</div>
+    <div class="ps-bar"><div class="ps-fill" id="ps-fill" style="width:0%"></div></div>
+    <div class="ps-stats">
+      <span id="ps-done">0 blocs complétés</span>
+      <span id="ps-time">0h00 écoulées</span>
+    </div>
+  </div>
+
+  <div id="jours-content"></div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── DONNÉES DU COURS ──────────────────────────────────
+const JOURS = [
+  {
+    id:'lundi', label:'LUNDI', emoji:'🔥', jour:'Jour 1',
+    couleur:'#5B2D8E', bg:'linear-gradient(135deg,#3E1E70,#5B2D8E,#7B3FBE)',
+    titre:"L'Éveil du Héros",
+    sous:"Premier jour du Royaume — Allumer la flamme",
+    infos:['9h00 – 15h30','6h30 de formation','30 élèves','Mois 1 · Semaine 1'],
+    blocs:[
+      {
+        id:'b1', emoji:'🔥', heure:'9h00', fin:'9h45', duree:'45 min',
+        titre:'Introduction & Éveil',
+        couleur:'rgba(91,45,142,.4)',
+        timer:2700,
+        segments:[
+          {type:'note',label:'📋 AVANT 9H00 — CHECKLIST',text:`✅ Ouvrir Canva — Diapositive 1 (forêt magique)
+✅ Tester micro et caméra
+✅ Liste des participants prête
+✅ Respirer. Sourire. Vous êtes prête.`},
+          {type:'canva',label:'🎨 CANVA — Diapositive 1',text:'Image de fond : forêt magique ou carte du monde. Texte : "ViVaCoeur IA — Votre aventure commence aujourd\'hui." Couleurs violet et or.'},
+          {type:'paroles',label:'🎤 PAROLES — 9h00 · Ouverture',text:`[ Apparaître à l'écran. Silence 3 secondes. Sourire. ]
+
+« Bonjour. Bonjour à chacun et chacune d'entre vous. »
+
+[ Pause 2 secondes. ]
+
+« Je veux que vous fassiez quelque chose pour moi. Fermez les yeux — juste 10 secondes. Pensez à UNE raison pour laquelle vous êtes ici aujourd'hui. La vraie raison. »
+
+[ Attendre 10 secondes. ]
+
+« Ouvrez les yeux. Cette raison — gardez-la précieuse. C'est elle qui va vous faire rester dans les moments difficiles. »
+
+« Mon nom est Denise Levesque. Je suis la Gardienne du Royaume ViVaCoeur IA. Et pendant les prochains mois, je vais marcher avec vous dans cette aventure. »`},
+          {type:'emotion',label:'💜 GESTION ÉMOTIONNELLE',text:`Si caméras éteintes / silence :
+→ "Si votre caméra est éteinte, c'est correct — je vous vois dans mon cœur."
+
+Pour les 55-65 ans — parler plus lentement, répéter les instructions.
+Pour les 17-25 ans — les impliquer avec des questions directes.`},
+          {type:'canva',label:'🎨 CANVA — Diapositive 2',text:'Fond violet foncé. Texte doré : "Pourquoi êtes-vous ici aujourd\'hui ?" Sous-texte : "Tapez dans le chat — votre vraie raison."'},
+          {type:'paroles',label:'🎤 PAROLES — 9h05 · Le Chat',text:`« Ouvrez le chat Zoom — le bouton bulle en bas de votre écran. »
+
+[ Attendre 30 secondes. ]
+
+« Tapez UNE phrase. Pourquoi vous êtes ici. Ce que vous voulez changer dans votre vie. Personne ne juge. Tout le monde lit. Allez-y. »
+
+[ Lire 3-4 réponses à voix haute. ]
+
+« Merci. » — « C'est courageux. » — « Je vous entends. »`},
+          {type:'canva',label:'🎨 CANVA — Diapositive 3',text:'Personnage World of Warcraft qui commence une quête. Texte : "Aujourd\'hui, vous quittez le village."'},
+          {type:'paroles',label:'🎤 PAROLES — 9h12 · La Métaphore',text:`« Dans les grands jeux vidéo — il y a toujours un moment zéro. Le moment où votre personnage sort du village pour la première fois. Il n'a rien. Aucune armure. Mais il a quelque chose que personne ne peut lui enlever. »
+
+[ Pause. ]
+
+« Il a décidé de partir. »
+
+« Vous êtes ce personnage. Ce matin. »
+
+« L'intelligence artificielle — c'est votre épée magique. Pas parce qu'elle pense à votre place. Mais parce qu'elle vous permet d'aller dix fois plus vite. »`},
+          {type:'note',label:'📌 ADAPTER SELON L\'ÂGE',text:`17-25 ans : Références gaming — Fortnite, Minecraft. Dynamique et compétitif.
+35-50 ans : Mettre l'accent sur la liberté financière.
+55-65 ans : "Votre expérience de vie est votre plus grand avantage."`},
+        ]
+      },
+      {
+        id:'b2', emoji:'🧠', heure:'9h45', fin:'11h00', duree:'75 min',
+        titre:'Les 4 Couleurs ViVaCoeur',
+        couleur:'rgba(21,101,192,.4)',
+        timer:4500,
+        segments:[
+          {type:'canva',label:'🎨 CANVA — Diapositive 4',text:'Les 4 cadres colorés : BLEU (Idée) · VERT (Client) · ROUGE (Problème) · JAUNE (Solution). Style épique — chaque cadre comme un bouclier de guerrier.'},
+          {type:'paroles',label:'🎤 PAROLES — 9h45 · Introduction',text:`« Tout ce que vous allez apprendre repose sur QUATRE couleurs. Si vous comprenez ces quatre couleurs — vous comprenez comment fonctionne n'importe quelle entreprise au monde. »
+
+« BLEU — votre IDÉE. Ce que vous aimez faire.
+VERT — votre CLIENT. La personne qui va payer.
+ROUGE — le PROBLÈME. Ce qui empêche votre client de dormir.
+JAUNE — la SOLUTION PAYANTE. Ce que vous vendez. »`},
+          {type:'paroles',label:'🎤 PAROLES — Le BLEU',text:`[ Diapositive BLEUE — ampoule dorée ]
+
+« Une bonne idée d'affaires n'a PAS besoin d'être révolutionnaire. Elle a besoin d'être VOUS. »
+
+« Tapez dans le chat — un mot ou deux qui décrit votre idée. Même imparfaite. »
+
+[ Lire quelques idées. ] « Je ne vois aucune mauvaise idée dans ce chat. »`},
+          {type:'paroles',label:'🎤 PAROLES — Le VERT',text:`[ Diapositive VERTE ]
+
+« 90% des entrepreneurs tombent amoureux de leur idée et oublient de tomber amoureux de leur CLIENT. »
+
+« Votre client c'est une personne RÉELLE. Un âge. Une situation. Une frustration précise. Pas "tout le monde". »`},
+          {type:'paroles',label:'🎤 PAROLES — Le ROUGE',text:`[ Diapositive ROUGE ]
+
+« Les gens n'achètent pas des produits. Les gens achètent des SOLUTIONS À LEURS PROBLÈMES. »
+
+« Un problème rouge — ça fait mal. La personne y pense chaque jour. Si elle dit "c'est pas grave" — c'est rose. Le rose ne vend pas. Le rouge, oui. »`},
+          {type:'paroles',label:'🎤 PAROLES — Le JAUNE',text:`[ Diapositive JAUNE ]
+
+« La formule magique : J'aide [QUI] à [QUOI] grâce à [COMMENT] pour [QUEL RÉSULTAT]. »
+
+« Exemple : J'aide les personnes âgées à recevoir des soins de qualité grâce à un service personnalisé pour qu'elles restent chez elles en toute sécurité. »
+
+« Tapez votre formule dans le chat — même imparfaite. Essayez. »`},
+          {type:'note',label:'📌 PAUSE — 11h00 à 11h15',text:`Dire : "On prend une pause méritée. Retour à 11h15. Pensez à votre formule pendant la pause. Prenez un verre d'eau — votre cerveau travaille fort !"
+
+Rester disponible pour les questions.`},
+        ]
+      },
+      {
+        id:'b3', emoji:'⚡', heure:'11h15', fin:'12h30', duree:'75 min',
+        titre:'Activité — Fiche d\'Idée en Équipe',
+        couleur:'rgba(183,28,28,.35)',
+        timer:4500,
+        segments:[
+          {type:'canva',label:'🎨 CANVA — Diapositive 5',text:'Image de guerriers partant en quête ensemble. Texte : "Votre équipe. Votre entreprise. Votre aventure."'},
+          {type:'paroles',label:'🎤 PAROLES — Lancement',text:`« On passe à l'action. Dans quelques minutes, vous allez dans vos équipes de cinq. »
+
+« Les règles du clan :
+Un — On se respecte.
+Deux — On contribue.
+Trois — On communique. »
+
+« Votre mission : Compléter la Fiche d'Idée — BLEU, VERT, ROUGE, JAUNE. »
+« 60 minutes. À 12h15, chaque équipe présente en 2 minutes. »
+
+[ Lancer les Breakout Rooms. ]`},
+          {type:'activite',label:'⚡ BREAKOUT ROOMS — 60 minutes',text:`Visiter CHAQUE équipe — minimum 10 min par salle.
+Observer 1 minute en silence avant d'intervenir.
+Avertir à 15 min de la fin.
+À 5 min : "Préparez votre porte-parole."
+
+SI BLOQUÉE :
+→ "Qu'est-ce qui vous passionne dans la vraie vie ?"
+→ "Quel problème avez-vous vécu cette semaine ?"
+→ "Si vous aviez 500$ à investir demain — dans quoi ?""`},
+          {type:'emotion',label:'💜 DYNAMIQUES D\'ÉQUIPE',text:`Équipe qui se dispute : "Quelle est votre décision de GROUPE ?"
+Élève qui domine : Lui dire en privé : "Laisse plus de place aux autres."
+Différence d'âge : "Le jeune apporte le digital. Le senior apporte la sagesse. Ensemble — imbattables."`},
+          {type:'paroles',label:'🎤 PAROLES — Présentations 12h15',text:`[ Revenir en salle principale. Grand sourire. ]
+
+« Bienvenue de retour ! Je suis impatiente d'entendre vos idées. »
+
+« Chaque équipe : 2 minutes. QUOI, POUR QUI, POURQUOI. »
+
+[ Après chaque présentation : ]
+« Merci [prénom]. Ce que j'aime dans votre idée : [positif spécifique]. »
+« Applaudissez ! »
+
+⚠️ Zéro critique aujourd'hui. Seulement des encouragements.`},
+          {type:'note',label:'🍽️ DÎNER — 12h30 à 13h30',text:`"Pendant le dîner — parlez de votre idée. Observez les réactions de vos proches. Elles vous apprendront quelque chose."
+
+Rester disponible par message.`},
+        ]
+      },
+      {
+        id:'b4', emoji:'💬', heure:'13h30', fin:'14h00', duree:'30 min',
+        titre:'Cercle de Questions',
+        couleur:'rgba(74,35,90,.5)',
+        timer:1800,
+        segments:[
+          {type:'paroles',label:'🎤 PAROLES — Ouverture',text:`« On entre dans le Cercle de Questions. Mon moment préféré. »
+
+« Ici — pas de mauvaises questions. Pas de questions stupides. Ouvrez le chat. Tapez votre question. »`},
+          {type:'paroles',label:'🎤 RÉPONSES FRÉQUENTES',text:`SI : "Mon idée existe déjà ?"
+→ "Combien de coiffeurs dans votre ville ? Chacun a sa clientèle. Votre idée n'a pas besoin d'être unique — VOUS, vous l'êtes."
+
+SI : "Je suis trop vieux / trop jeune ?"
+→ Aîné : "Harland Sanders a fondé KFC à 65 ans."
+→ Jeune : "Mark Zuckerberg avait 19 ans."
+
+SI : "Et si j'échoue ?"
+→ "L'échec fait partie du programme — comme enseignement."`},
+          {type:'emotion',label:'💜 SI QUESTION TRÈS PERSONNELLE',text:`Ne pas répondre publiquement.
+Dire : "Je vais vous répondre en privé — c'est important."
+Envoyer un message privé après le cours.`},
+        ]
+      },
+      {
+        id:'b5', emoji:'🧭', heure:'14h00', fin:'14h45', duree:'45 min',
+        titre:'Accompagnement Individuel',
+        couleur:'rgba(26,82,118,.4)',
+        timer:2700,
+        segments:[
+          {type:'paroles',label:'🎤 PAROLES — Lancement',text:`« Je vais retourner dans chaque salle. Et je vais poser à chacun la même question : »
+
+« Comment vous sentez-vous en ce moment ? »
+
+« Pas de bonne ou mauvaise réponse. Je veux juste vous entendre. »`},
+          {type:'activite',label:'⚡ SCRIPTS PAR ÉMOTION',text:`SI ENTHOUSIASTE :
+"Garde cette énergie. Dans les moments de doute — souviens-toi de comment tu te sens là, maintenant."
+
+SI ANXIEUX(SE) :
+"L'anxiété que tu ressens, c'est le signe que tu prends quelque chose d'important au sérieux. On avance ensemble."
+
+SI PERDU(E) :
+"Merci d'être honnête. Qu'est-ce qui te semble le plus flou ? [Écouter] On va travailler là-dessus. Tu n'es pas seul(e)."
+
+📌 Noter les élèves très anxieux — suivi dans les 24h.`},
+        ]
+      },
+      {
+        id:'b6', emoji:'🏆', heure:'14h45', fin:'15h30', duree:'45 min',
+        titre:'Clôture & Célébration',
+        couleur:'rgba(201,168,76,.25)',
+        timer:2700,
+        segments:[
+          {type:'canva',label:'🎨 CANVA — Diapositive Finale',text:'Coucher de soleil épique — guerriers victorieux. Texte : "Vous avez fait le premier pas." Sous-texte or : "L\'aventure commence."'},
+          {type:'paroles',label:'🎤 PAROLES — Synthèse',text:`[ Grand sourire. Émotion sincère. ]
+
+« Regardez ce que vous avez accompli aujourd'hui. »
+
+« Ce matin vous étiez arrivés avec des espoirs, des doutes, des rêves. »
+« Là maintenant — vous avez une idée d'affaires validée. Une équipe. Et vous avez présenté devant un groupe. »
+
+« Savez-vous combien de personnes parlent d'entreprendre depuis des années sans jamais faire ce que vous avez fait aujourd'hui ? La majorité. Vous n'êtes pas la majorité. »`},
+          {type:'paroles',label:'🎤 PAROLES — La Phrase Vision',text:`« Ouvrez un document — Word, Notes, un papier — peu importe. »
+
+« Écrivez UNE phrase : Dans 10 mois, mon entreprise... »
+
+[ Pause 2 minutes — laisser écrire. ]
+
+« Ne la montrez à personne. C'est votre étoile du nord. Dans 10 mois — vous allez la lire lors de votre cérémonie de couronnement. Et vous allez pleurer de fierté. Je vous le promets. »`},
+          {type:'paroles',label:'🎤 PAROLES — Au Revoir',text:`« Pour demain : »
+« Un — Relisez votre Fiche d'Idée. Améliorez-la. »
+« Deux — Testez votre idée sur UNE personne. »
+« Trois — Allez sur Claude.ai — posez 3 questions sur votre idée. »
+
+« Ce que vous faites demande du courage. Des gens vont peut-être douter. Ne les écoutez pas. »
+
+« Écoutez votre phrase vision. »
+
+« Je vous retrouve demain. Merci pour votre courage aujourd'hui. Bonne soirée. »
+
+[ Rester 10 minutes après pour les questions privées. ]`},
+          {type:'activite',label:'⚡ HOMEWORK — Soir du Jour 1',text:`1. Compléter la Fiche d'Idée individuellement
+2. Écrire sa phrase vision : "Dans 10 mois, mon entreprise..."
+3. Tester l'idée sur 1 personne — noter la réaction
+4. Ouvrir Claude.ai — poser 3 questions sur son idée`},
+          {type:'note',label:'📌 APRÈS LE COURS — Actions',text:`✅ Envoyer message groupe : "Bravo pour aujourd'hui ! Vous avez été extraordinaires. À demain 9h00 ! ⚔️"
+✅ Contacter en privé les élèves anxieux
+✅ Préparer Canva Jour 2 — Thème : Identité & Mission`},
+        ]
+      },
+    ]
+  },
+  {
+    id:'mardi', label:'MARDI', emoji:'🎯', jour:'Jour 2',
+    couleur:'#1565C0', bg:'linear-gradient(135deg,#0D47A1,#1565C0,#1976D2)',
+    titre:"Identité & Mission du Héros",
+    sous:"Choisir son thème · Écrire sa mission · Premier artefact",
+    infos:['9h00 – 15h30','6h30 de formation','Mois 1 · Jour 2'],
+    blocs:[
+      {id:'b1',emoji:'🔥',heure:'9h00',fin:'9h45',duree:'45 min',titre:'Réveil & Rappel Jour 1',couleur:'rgba(21,101,192,.4)',timer:2700,
+       segments:[
+         {type:'canva',label:'🎨 CANVA',text:'Diapositive : "Bienvenue Jour 2 — Vous avez survécu au premier jour ! Maintenant on construit."'},
+         {type:'paroles',label:'🎤 PAROLES — Ouverture',text:`« Bonjour tout le monde ! Comment vous sentez-vous ce matin ? »
+
+[ Chat — lire les réponses. ]
+
+« Hier vous avez quitté le village. Aujourd'hui — on forge votre identité d'entrepreneur. »
+
+« Qui a testé son idée sur quelqu'un hier soir ? Tapez dans le chat ! »`},
+       ]},
+      {id:'b2',emoji:'🧠',heure:'9h45',fin:'11h00',duree:'75 min',titre:'Choisir son Thème & Mission',couleur:'rgba(21,101,192,.4)',timer:4500,
+       segments:[
+         {type:'paroles',label:'🎤 PAROLES — Thème',text:`« Aujourd'hui on commence pour vrai. »
+« Vous allez créer votre première entreprise. Pas compliquée. Simple, légère, amusante. »
+
+« Choisissez un THÈME que vous aimez : »
+« Animaux · Émotions · Nature · Gaming · Humour · Motivation · Soins · Art »
+
+« Tapez votre thème dans le chat ! »`},
+         {type:'paroles',label:'🎤 PAROLES — Mission',text:`« Maintenant — écrivez votre phrase mission : »
+« J'aide [QUI] à [QUOI] grâce à [COMMENT] »
+
+« Prenez 5 minutes. Écrivez-la. Partagez dans le chat. »
+
+[ Lire et commenter chaque mission avec encouragement. ]`},
+       ]},
+      {id:'b3',emoji:'⚡',heure:'11h15',fin:'12h30',duree:'75 min',titre:'Créer le Premier Artefact',couleur:'rgba(183,28,28,.35)',timer:4500,
+       segments:[
+         {type:'canva',label:'🎨 CANVA',text:'Montrer Canva en partage d\'écran. Guide pas à pas pour créer un visuel simple.'},
+         {type:'activite',label:'⚡ ACTIVITÉ — Canva',text:`Chaque élève crée son premier artefact Canva :
+→ 1 couleur principale
+→ 1 police
+→ 1 symbole
+→ 1 message simple
+
+Durée : 45 minutes. "Fait" est mieux que "parfait".`},
+       ]},
+      {id:'b4',emoji:'💬',heure:'13h30',fin:'14h00',duree:'30 min',titre:'Cercle de Questions',couleur:'rgba(74,35,90,.5)',timer:1800,
+       segments:[{type:'paroles',label:'🎤 PAROLES',text:`« Cercle de Questions — ouvrez le chat. Posez vos questions. »`}]},
+      {id:'b5',emoji:'🧭',heure:'14h00',fin:'14h45',duree:'45 min',titre:'Accompagnement',couleur:'rgba(26,82,118,.4)',timer:2700,
+       segments:[{type:'activite',label:'⚡ TOUR DE SALLE',text:`Visiter chaque équipe. Question : "Comment ça avance votre artefact ?"
+Encourager. Ne pas critiquer. Valoriser chaque création.`}]},
+      {id:'b6',emoji:'🏆',heure:'14h45',fin:'15h30',duree:'45 min',titre:'Partage des Artefacts',couleur:'rgba(201,168,76,.25)',timer:2700,
+       segments:[
+         {type:'paroles',label:'🎤 PAROLES — Clôture',text:`« Chaque élève partage son artefact — 30 secondes. »
+
+[ Après chaque partage : ]
+« Magnifique. C'est votre première création. Elle existe maintenant. »
+
+« Créer c'est avancer. Vous êtes officiellement des créateurs. »
+
+HOMEWORK :
+1. Améliorer l'artefact ce soir
+2. Penser à un nom pour l'entreprise`},
+       ]},
+    ]
+  },
+  {id:'mercredi',label:'MERCREDI',emoji:'🎨',jour:'Jour 3',couleur:'#00695C',bg:'linear-gradient(135deg,#004D40,#00695C)',titre:"Premier Produit Officiel",sous:"Canva avancé · Identité visuelle · Produit finalisé",infos:['9h00 – 15h30','Mois 1 · Jour 3'],blocs:[
+    {id:'b1',emoji:'🔥',heure:'9h00',fin:'9h45',duree:'45 min',titre:'Réveil Créatif',couleur:'rgba(0,105,92,.4)',timer:2700,segments:[{type:'paroles',label:'🎤 PAROLES',text:`« Bonjour les créateurs ! Montrez-moi vos artefacts améliorés dans le chat ! »`}]},
+    {id:'b2',emoji:'🧠',heure:'9h45',fin:'11h00',duree:'75 min',titre:'Identité Visuelle Complète',couleur:'rgba(0,105,92,.4)',timer:4500,segments:[{type:'paroles',label:'🎤 PAROLES',text:`« Aujourd'hui — votre identité visuelle complète. »
+« 1 couleur · 1 police · 1 symbole · 1 ambiance »
+« C'est votre armure entrepreneuriale. »`}]},
+    {id:'b3',emoji:'⚡',heure:'11h15',fin:'12h30',duree:'75 min',titre:'Création du Produit Final',couleur:'rgba(183,28,28,.35)',timer:4500,segments:[{type:'activite',label:'⚡ ACTIVITÉ',text:`Finaliser le premier produit complet :
+→ Fond d'écran OU affiche OU mini-poster
+→ Avec identité visuelle complète
+→ Prêt à mettre en vente`}]},
+    {id:'b4',emoji:'💬',heure:'13h30',fin:'14h00',duree:'30 min',titre:'Questions',couleur:'rgba(74,35,90,.5)',timer:1800,segments:[{type:'paroles',label:'🎤',text:'Cercle de Questions — chat ouvert.'}]},
+    {id:'b5',emoji:'🧭',heure:'14h00',fin:'14h45',duree:'45 min',titre:'Accompagnement',couleur:'rgba(26,82,118,.4)',timer:2700,segments:[{type:'activite',label:'⚡',text:'Visiter chaque équipe. Encourager les créations. Aider les bloqués.'}]},
+    {id:'b6',emoji:'🏆',heure:'14h45',fin:'15h30',duree:'45 min',titre:'Exposition des Produits',couleur:'rgba(201,168,76,.25)',timer:2700,segments:[{type:'paroles',label:'🎤 PAROLES',text:`« Chaque équipe présente son produit final. »
+« Ce produit — il existe maintenant. Vous pouvez le vendre. »
+« HOMEWORK : Montrez votre produit à 3 personnes ce soir. »`}]},
+  ]},
+  {id:'jeudi',label:'JEUDI',emoji:'👥',jour:'Jour 4',couleur:'#B71C1C',bg:'linear-gradient(135deg,#7B0000,#B71C1C)',titre:"Le Client Idéal",sous:"Avatar client · Entretiens · Valider la douleur",infos:['9h00 – 15h30','Mois 1 · Jour 4'],blocs:[
+    {id:'b1',emoji:'🔥',heure:'9h00',fin:'9h45',duree:'45 min',titre:'Qui est votre client ?',couleur:'rgba(183,28,28,.4)',timer:2700,segments:[{type:'paroles',label:'🎤',text:`« Aujourd'hui — on trouve votre client idéal. Pas "tout le monde". UNE personne. »`}]},
+    {id:'b2',emoji:'🧠',heure:'9h45',fin:'11h00',duree:'75 min',titre:'Créer l\'Avatar Client',couleur:'rgba(183,28,28,.4)',timer:4500,segments:[{type:'activite',label:'⚡',text:`Créer l'avatar client complet :
+→ Prénom fictif · Âge · Ville
+→ Situation de vie
+→ Frustration principale
+→ Ce qu'il dit le matin en se levant`}]},
+    {id:'b3',emoji:'⚡',heure:'11h15',fin:'12h30',duree:'75 min',titre:'Entretiens de Découverte',couleur:'rgba(183,28,28,.35)',timer:4500,segments:[{type:'activite',label:'⚡',text:`Chaque élève contacte 2 personnes qui correspondent à son avatar.
+Questions à poser :
+→ "Quel est votre plus grand défi avec [sujet] ?"
+→ "Avez-vous déjà payé pour résoudre ce problème ?"
+→ "Qu'est-ce qui vous frustrerait le plus si ça ne changeait pas ?"`}]},
+    {id:'b4',emoji:'💬',heure:'13h30',fin:'14h00',duree:'30 min',titre:'Questions',couleur:'rgba(74,35,90,.5)',timer:1800,segments:[{type:'paroles',label:'🎤',text:'Questions sur le client et les entretiens.'}]},
+    {id:'b5',emoji:'🧭',heure:'14h00',fin:'14h45',duree:'45 min',titre:'Accompagnement',couleur:'rgba(26,82,118,.4)',timer:2700,segments:[{type:'activite',label:'⚡',text:'Aider les équipes à définir leur avatar. Poser des questions pour débloquer.'}]},
+    {id:'b6',emoji:'🏆',heure:'14h45',fin:'15h30',duree:'45 min',titre:'Partage des Avatars',couleur:'rgba(201,168,76,.25)',timer:2700,segments:[{type:'paroles',label:'🎤',text:`« Chaque équipe présente son avatar client en 1 minute. »
+« HOMEWORK : Parlez à 1 vraie personne qui correspond à votre avatar. »`}]},
+  ]},
+  {id:'vendredi',label:'VENDREDI',emoji:'👹',jour:'Jour 5 — BOSS',couleur:'#C9A84C',bg:'linear-gradient(135deg,#7B5A00,#C9A84C,#FFD54F)',titre:"⚔️ BOSS FINAL — Semaine 1",sous:"Présentation officielle · Récompenses · Célébration",infos:['9h00 – 15h30','BOSS FINAL','Mois 1 · Semaine 1'],blocs:[
+    {id:'b1',emoji:'⚔️',heure:'9h00',fin:'10h00',duree:'60 min',titre:'Préparation au Boss',couleur:'rgba(201,168,76,.3)',timer:3600,segments:[{type:'paroles',label:'🎤 PAROLES',text:`« C'est le grand jour. »
+
+« Cette semaine vous avez : »
+« ✅ Trouvé votre idée d'affaires »
+« ✅ Créé votre identité visuelle »
+« ✅ Fabriqué votre premier produit »
+« ✅ Identifié votre client idéal »
+
+« Maintenant — vous allez présenter tout ça. Devant tout le monde. »
+« Le Boss de cette semaine s'appelait La Peur de Commencer. Aujourd'hui — vous le vaincrez. »
+
+[ 30 minutes de préparation en équipes. ]`}]},
+    {id:'b2',emoji:'🏆',heure:'10h00',fin:'12h30',duree:'2h30',titre:'PRÉSENTATIONS OFFICIELLES',couleur:'rgba(201,168,76,.4)',timer:9000,segments:[{type:'activite',label:'⚡ FORMAT',text:`Chaque équipe — 10 minutes :
+→ 5 min présentation (idée, client, produit)
+→ 3 min questions du groupe
+→ 2 min feedback de la Gardienne
+
+Après chaque présentation :
+« Applaudissez ! Ils ont vaincu le Boss ! »`},{type:'paroles',label:'🎤 FEEDBACK GARDIENNE',text:`Toujours commencer par le positif.
+"Ce que j'aime dans votre présentation c'est..."
+"Ce que je vois comme force dans votre équipe c'est..."
+Jamais de critique négative directe le Jour 5.`}]},
+    {id:'b3',emoji:'🎉',heure:'13h30',fin:'14h30',duree:'60 min',titre:'CÉRÉMONIE DE RÉCOMPENSES',couleur:'rgba(201,168,76,.3)',timer:3600,segments:[{type:'paroles',label:'🎤 PAROLES — Cérémonie',text:`[ Changer diapositive — fond royal avec couronne ]
+
+« Je vais maintenant remettre les récompenses de la Semaine 1. »
+
+Pour chaque équipe :
+« Équipe [Nom] — vous recevez : »
+« +50 XP · Titre : Héros Éveillés »
+« 🐺 Le Bébé Loup Courageux est débloqué »
+« Votre artefact : Premier Produit »
+
+« Félicitations. Vous avez survécu à votre première semaine dans le Royaume. »`}]},
+    {id:'b4',emoji:'🌟',heure:'14h30',fin:'15h30',duree:'60 min',titre:'Vision & Plan Semaine 2',couleur:'rgba(201,168,76,.25)',timer:3600,segments:[{type:'paroles',label:'🎤 PAROLES — Clôture Semaine 1',text:`« Semaine 2 — on va encore plus loin. »
+« La semaine prochaine : »
+« → Lundi : Améliorer votre produit »
+« → Mardi : Premier contact client »
+« → Mercredi : Votre prix de vente »
+« → Jeudi : Préparer la vente »
+« → Vendredi : VOS PREMIÈRES VRAIES VENTES »
+
+[ Pause dramatique. ]
+
+« La semaine prochaine — vous allez encaisser votre premier vrai dollar d'entrepreneur. »
+
+« Bonne fin de semaine. Vous l'avez mérité. À lundi. ⚔️ »`},{type:'note',label:'📌 APRÈS LA SEMAINE 1',text:`✅ Email à tous les élèves : "Bravo pour votre première semaine !"
+✅ Contacter les élèves en difficulté
+✅ Préparer le contenu de la Semaine 2
+✅ Mettre à jour la grille des équipes avec les observations`}]},
+  ]},
+];
+
+// ── ÉTAT ──────────────────────────────────────────────
+let currentJour = 'lundi';
+let timers = {};
+let timerIntervals = {};
+let completed = {};
+
+// ── ÉTOILES ───────────────────────────────────────────
+function renderStars() {
+  const s = document.getElementById('stars');
+  for(let i=0;i<80;i++){
+    const el=document.createElement('div');el.className='star';
+    const sz=Math.random()*2+1;
+    el.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
+    s.appendChild(el);
+  }
+}
+
+// ── NAVIGATION ────────────────────────────────────────
+function renderNav() {
+  const nav = document.getElementById('jours-nav');
+  nav.innerHTML = JOURS.map(j => `
+    <button class="jour-btn ${j.id===currentJour?'active':''} ${isJourDone(j.id)?'done':''}"
+      onclick="selectJour('${j.id}')">
+      <div class="jb-emoji">${j.emoji}</div>
+      <div class="jb-label">${j.label}</div>
+      <div class="jb-jour">${j.jour}</div>
+    </button>`).join('');
+}
+
+function isJourDone(id) {
+  const j = JOURS.find(x=>x.id===id);
+  if(!j) return false;
+  return j.blocs.every(b => completed[id+'_'+b.id]);
+}
+
+function selectJour(id) {
+  currentJour = id;
+  renderNav();
+  renderContent();
+  updateProgress();
+}
+
+// ── CONTENU ───────────────────────────────────────────
+function renderContent() {
+  const container = document.getElementById('jours-content');
+  const j = JOURS.find(x=>x.id===currentJour);
+  if(!j) return;
+
+  container.innerHTML = `
+    <div class="jour-card active">
+      <div class="jour-header" style="background:${j.bg}">
+        <div class="jh-mois">⚔️ VIVACOEUR IA · MOIS 1 · ${j.label}</div>
+        <div class="jh-titre">${j.titre}</div>
+        <div class="jh-sous">${j.sous}</div>
+        <div class="jh-infos">
+          ${j.infos.map(i=>`<span class="jh-badge">${i}</span>`).join('')}
+        </div>
+      </div>
+      <div class="blocs-list">
+        ${j.blocs.map(b => renderBloc(j.id, b)).join('')}
+      </div>
+      <div class="notes-box" style="margin-top:.5rem">
+        <div class="notes-label">📝 MES NOTES DU JOUR</div>
+        <textarea class="notes-input" placeholder="Notez vos observations, élèves à suivre, idées pour améliorer le cours..." 
+          oninput="saveNote('${j.id}',this.value)">${localStorage.getItem('note_'+j.id)||''}</textarea>
+      </div>
+    </div>`;
+}
+
+function renderBloc(jourId, b) {
+  const isDone = completed[jourId+'_'+b.id];
+  return `
+    <div class="bloc ${isDone?'completed':''}" id="bloc-${jourId}-${b.id}">
+      <div class="bloc-header" style="background:${b.couleur}" onclick="toggleBloc('${jourId}','${b.id}')">
+        <div class="bh-icon">${b.emoji}</div>
+        <div class="bh-info">
+          <div class="bh-time">${b.heure} — ${b.fin}</div>
+          <div class="bh-titre">${b.titre}</div>
+          <div class="bh-dur">⏱ ${b.duree}</div>
+        </div>
+        <div class="bh-actions">
+          <div class="timer-display" id="timer-${jourId}-${b.id}">${formatTime(b.timer)}</div>
+          <button class="timer-btn timer-start" onclick="event.stopPropagation();startTimer('${jourId}','${b.id}',${b.timer})" title="Démarrer minuteur">▶</button>
+          <button class="timer-btn timer-reset" onclick="event.stopPropagation();resetTimer('${jourId}','${b.id}',${b.timer})" title="Réinitialiser">↺</button>
+          <button class="check-btn" onclick="event.stopPropagation();toggleComplete('${jourId}','${b.id}')" title="Marquer complété">
+            ${isDone?'✓':''}
+          </button>
+          <span class="bh-toggle">▼</span>
+        </div>
+      </div>
+      <div class="bloc-body">
+        ${b.segments.map(s => renderSegment(s)).join('')}
+      </div>
+    </div>`;
+}
+
+function renderSegment(s) {
+  const types = {
+    paroles:{cls:'seg-paroles',color:'#C9A4FF'},
+    canva:{cls:'seg-canva',color:var_g()},
+    activite:{cls:'seg-activite',color:'#81C784'},
+    emotion:{cls:'seg-emotion',color:'#F48FB1'},
+    note:{cls:'seg-note',color:'#90CAF9'},
+  };
+  const t = types[s.type]||types.note;
+  const formatted = s.text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  return `<div class="segment ${t.cls}">
+    <div class="seg-label" style="color:${t.color}">${s.label}</div>
+    <div class="seg-text">${formatted}</div>
+  </div>`;
+}
+
+function var_g(){return '#C9A84C';}
+
+// ── INTERACTIONS ──────────────────────────────────────
+function toggleBloc(jourId, blocId) {
+  const bloc = document.getElementById(`bloc-${jourId}-${blocId}`);
+  if(bloc) bloc.classList.toggle('expanded');
+}
+
+function toggleComplete(jourId, blocId) {
+  const key = jourId+'_'+blocId;
+  completed[key] = !completed[key];
+  localStorage.setItem('completed', JSON.stringify(completed));
+  renderNav();
+  renderContent();
+  updateProgress();
+  if(completed[key]) toast('✅ Bloc complété ! ⚔️');
+}
+
+function startTimer(jourId, blocId, duration) {
+  const key = jourId+'_'+blocId;
+  if(timerIntervals[key]) return;
+  if(timers[key] === undefined) timers[key] = duration;
+  timerIntervals[key] = setInterval(()=>{
+    timers[key]--;
+    const el = document.getElementById(`timer-${jourId}-${blocId}`);
+    if(el) el.textContent = formatTime(timers[key]);
+    if(timers[key] <= 0) {
+      clearInterval(timerIntervals[key]);
+      delete timerIntervals[key];
+      toast(`⏰ Temps écoulé — ${jourId} ${blocId} !`);
+    }
+  }, 1000);
+}
+
+function resetTimer(jourId, blocId, duration) {
+  const key = jourId+'_'+blocId;
+  clearInterval(timerIntervals[key]);
+  delete timerIntervals[key];
+  timers[key] = duration;
+  const el = document.getElementById(`timer-${jourId}-${blocId}`);
+  if(el) el.textContent = formatTime(duration);
+}
+
+function formatTime(s) {
+  const h = Math.floor(s/3600);
+  const m = Math.floor((s%3600)/60);
+  const sec = s%60;
+  if(h>0) return `${h}h${String(m).padStart(2,'0')}`;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function updateProgress() {
+  const j = JOURS.find(x=>x.id===currentJour);
+  if(!j) return;
+  const total = j.blocs.length;
+  const done = j.blocs.filter(b=>completed[currentJour+'_'+b.id]).length;
+  const pct = Math.round((done/total)*100);
+  document.getElementById('ps-fill').style.width = pct+'%';
+  document.getElementById('ps-done').textContent = `${done}/${total} blocs complétés`;
+}
+
+function saveNote(jourId, val) {
+  localStorage.setItem('note_'+jourId, val);
+}
+
+function toast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── MODALES ───────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+document.addEventListener('click', e => {
+  if(e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('show');
+  }
+});
+
+// ── PAIEMENT ──────────────────────────────────────────
+function pay(amount, type) {
+  const links = {
+    'inscription': 'https://buy.stripe.com/vivacoeur-inscription-120',
+    'semaine-tp':  'https://buy.stripe.com/vivacoeur-tp-40',
+    'semaine-tpa': 'https://buy.stripe.com/vivacoeur-tpa-25',
+  };
+  toast(`💳 Redirection vers le paiement de ${amount}$...`);
+  setTimeout(()=>{
+    window.open('https://stripe.com', '_blank');
+    toast('💡 Remplacez le lien Stripe par votre vrai lien dans le code');
+  }, 800);
+  closeModal('pay-modal');
+}
+
+// ── FICHIERS ──────────────────────────────────────────
+let uploadedFiles = JSON.parse(localStorage.getItem('vvc_files') || '[]');
+
+function handleFiles(fileList) {
+  Array.from(fileList).forEach(f => {
+    const ext = f.name.split('.').pop().toLowerCase();
+    const icons = {doc:'📄',docx:'📄',pdf:'📕',ppt:'📑',pptx:'📑',
+      xls:'📊',xlsx:'📊',jpg:'🖼️',jpeg:'🖼️',png:'🖼️',gif:'🖼️',mp4:'🎬',mp3:'🎵'};
+    const icon = icons[ext] || '📁';
+    uploadedFiles.push({name:f.name, icon, size: Math.round(f.size/1024)+'KB', id:Date.now()+Math.random()});
+  });
+  localStorage.setItem('vvc_files', JSON.stringify(uploadedFiles));
+  renderFiles();
+  toast(`✅ ${fileList.length} fichier(s) ajouté(s) !`);
+}
+
+function renderFiles() {
+  const list = document.getElementById('files-list');
+  if(!list) return;
+  if(uploadedFiles.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:.78rem;padding:.5rem">Aucun fichier ajouté</div>';
+    return;
+  }
+  list.innerHTML = uploadedFiles.map(f => `
+    <div class="file-item">
+      <span class="file-icon">${f.icon}</span>
+      <span class="file-name">${f.name} <span style="color:var(--muted);font-size:.65rem">${f.size}</span></span>
+      <button class="file-del" onclick="deleteFile('${f.id}')">✕</button>
+    </div>`).join('');
+}
+
+function deleteFile(id) {
+  uploadedFiles = uploadedFiles.filter(f => String(f.id) !== String(id));
+  localStorage.setItem('vvc_files', JSON.stringify(uploadedFiles));
+  renderFiles();
+}
+
+// ── LANGUE ────────────────────────────────────────────
+let currentLang = localStorage.getItem('vvc_lang') || 'fr-ca';
+const LANGS = {
+  'fr-ca':'🇨🇦 FR-QC','fr-fr':'🇫🇷 FR','en':'🇬🇧 EN',
+  'es':'🇪🇸 ES','pt':'🇧🇷 PT','ar':'🇸🇦 AR','zh':'🇨🇳 ZH','ht':'🇭🇹 HT'
+};
+
+function setLang(lang, el) {
+  currentLang = lang;
+  localStorage.setItem('vvc_lang', lang);
+  document.querySelectorAll('.lang-item').forEach(i => i.classList.remove('sel'));
+  el.classList.add('sel');
+  const lbl = document.getElementById('lang-label');
+  if(lbl) lbl.textContent = LANGS[lang] || 'Langue';
+  if(recognition) recognition.lang = getLangCode(lang);
+  closeModal('lang-modal');
+  toast(`🌐 Langue changée : ${LANGS[lang]}`);
+}
+
+function getLangCode(lang) {
+  const codes = {'fr-ca':'fr-CA','fr-fr':'fr-FR','en':'en-US',
+    'es':'es-ES','pt':'pt-BR','ar':'ar-SA','zh':'zh-CN','ht':'fr-HT'};
+  return codes[lang] || 'fr-CA';
+}
+
+// ── MICRO / TRANSCRIPTION ─────────────────────────────
+let recognition = null;
+let micActive = false;
+let micText = '';
+
+function initMic() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) { toast('❌ Votre navigateur ne supporte pas le micro — utilisez Chrome'); return false; }
+  recognition = new SR();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = getLangCode(currentLang);
+  recognition.onresult = e => {
+    let interim = '';
+    let final = '';
+    for(let i = e.resultIndex; i < e.results.length; i++) {
+      if(e.results[i].isFinal) final += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
+    }
+    if(final) micText += final;
+    const ft = document.getElementById('mic-final-text');
+    const it = document.getElementById('mic-interim-text');
+    if(ft) ft.textContent = micText;
+    if(it) it.textContent = interim;
+  };
+  recognition.onerror = e => { toast('🎤 Erreur micro : ' + e.error); stopMic(); };
+  recognition.onend = () => { if(micActive) recognition.start(); };
+  return true;
+}
+
+function toggleMic() {
+  if(!micActive) {
+    openModal('mic-modal');
+    startMicModal();
+  } else {
+    stopMic();
+  }
+}
+
+function startMicModal() {
+  if(!recognition && !initMic()) return;
+  micActive = true;
+  recognition.start();
+  document.getElementById('mic-btn').classList.add('active-mic');
+  document.getElementById('mic-status').textContent = '🔴 Enregistrement en cours — parlez maintenant !';
+  document.getElementById('mic-status').style.color = '#EF9A9A';
+  document.getElementById('mic-start-btn').style.display = 'none';
+  document.getElementById('mic-stop-btn').style.display = 'flex';
+  toast('🎤 Micro activé — parlez !');
+}
+
+function stopMic() {
+  if(recognition) { recognition.stop(); }
+  micActive = false;
+  document.getElementById('mic-btn')?.classList.remove('active-mic');
+  const status = document.getElementById('mic-status');
+  const startBtn = document.getElementById('mic-start-btn');
+  const stopBtn = document.getElementById('mic-stop-btn');
+  if(status) { status.textContent = 'Micro arrêté. Cliquez Démarrer pour recommencer.'; status.style.color = ''; }
+  if(startBtn) startBtn.style.display = 'flex';
+  if(stopBtn) stopBtn.style.display = 'none';
+}
+
+function copyMicText() {
+  navigator.clipboard.writeText(micText).then(()=>toast('📋 Texte copié !'));
+}
+
+function clearMic() {
+  micText = '';
+  const ft = document.getElementById('mic-final-text');
+  const it = document.getElementById('mic-interim-text');
+  if(ft) ft.textContent = '';
+  if(it) it.textContent = '';
+}
+
+// ── PARTAGE ───────────────────────────────────────────
+function copyShareLink() {
+  const link = 'https://vivacoeur.com/tableau-de-bord';
+  navigator.clipboard.writeText(link).then(()=>toast('📎 Lien copié !'));
+  closeModal('share-modal');
+}
+
+function shareVia(platform) {
+  const link = 'https://vivacoeur.com/tableau-de-bord';
+  const msg = `Voici le tableau de bord ViVaCoeur IA — votre programme entrepreneurial : ${link}`;
+  if(platform==='whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+  else if(platform==='email') window.open(`mailto:?subject=ViVaCoeur IA - Tableau de bord&body=${encodeURIComponent(msg)}`);
+  else { navigator.clipboard.writeText(msg); toast('📋 Copié !'); }
+  closeModal('share-modal');
+}
+
+// ── ASSISTANT IA ──────────────────────────────────────
+async function askIA() {
+  const input = document.getElementById('ia-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  const chat = document.getElementById('ia-chat');
+  chat.innerHTML += `<div style="background:rgba(91,45,142,.3);border-radius:8px;padding:.4rem .6rem;margin:.3rem 0;font-size:.8rem;text-align:right">${msg}</div>`;
+  chat.innerHTML += `<div id="ia-loading" style="color:var(--muted);font-size:.75rem;font-style:italic">🤖 ViVaCoeur IA réfléchit...</div>`;
+  chat.scrollTop = chat.scrollHeight;
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:'Tu es l\'assistante IA du programme ViVaCoeur IA de Denise Levesque. Tu aides la professeure pendant ses cours — conseils pédagogiques, gestion d\'émotions d\'élèves, idées d\'activités, scripts mot à mot. Court et pratique.',
+        messages:[{role:'user',content:msg}]})
+    });
+    const d = await r.json();
+    document.getElementById('ia-loading')?.remove();
+    const rep = d.content?.[0]?.text || 'Je ne peux pas répondre maintenant.';
+    chat.innerHTML += `<div style="background:rgba(201,168,76,.1);border-radius:8px;padding:.5rem .7rem;margin:.3rem 0;font-size:.8rem;border-left:3px solid var(--g)">${rep.replace(/\n/g,'<br>')}</div>`;
+    chat.scrollTop = chat.scrollHeight;
+  } catch(e) {
+    document.getElementById('ia-loading')?.remove();
+    chat.innerHTML += `<div style="color:#EF9A9A;font-size:.75rem">Erreur de connexion</div>`;
+  }
+}
+
+function quickAsk(q) {
+  document.getElementById('ia-input').value = q;
+  askIA();
+}
+
+// ── INIT ──────────────────────────────────────────────
+const saved = localStorage.getItem('completed');
+if(saved) completed = JSON.parse(saved);
+
+renderStars();
+renderNav();
+renderContent();
+updateProgress();
+renderFiles();
+
+// Mettre à jour le label de langue
+const lbl = document.getElementById('lang-label');
+if(lbl) lbl.textContent = LANGS[currentLang] || 'Langue';
+document.getElementById('lang-'+currentLang)?.classList.add('sel');
+
+// Ouvrir le premier bloc par défaut
+setTimeout(()=>{
+  const firstBloc = document.querySelector('.bloc');
+  if(firstBloc) firstBloc.classList.add('expanded');
+},300);
+</script>
+</body>
+</html>

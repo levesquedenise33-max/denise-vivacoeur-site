@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViVaCoeur IA — Les 10 Produits du Royaume</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --v:#5B2D8E;--vd:#3E1E70;--vl:#EDE7F6;
+  --g:#C9A84C;--gd:#7B5A00;--gl:#FFF8E7;
+  --bg:#0D0A1A;--card:#1A1030;--text:#F0E8FF;--muted:#9B8EC4;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at top,#1A0A3E 0%,#0D0A1A 70%)}
+
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+
+.header{position:relative;z-index:10;text-align:center;padding:3rem 1.5rem 1.5rem}
+.header h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.5rem);
+  background:linear-gradient(135deg,#fff,var(--g),#C9A4FF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
+.header p{color:var(--muted);font-size:.9rem}
+
+.container{max-width:1000px;margin:0 auto;padding:0 1rem 4rem;position:relative;z-index:10}
+
+/* TOTAUX */
+.totals{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.total-card{background:rgba(91,45,142,.2);border:1px solid rgba(201,168,76,.3);
+  border-radius:14px;padding:1.2rem;text-align:center}
+.tc-num{font-family:'Cinzel',serif;font-size:2rem;color:var(--g);font-weight:900}
+.tc-label{font-size:.78rem;color:var(--muted);margin-top:.3rem}
+
+/* PRODUCT CARDS */
+.products-list{display:flex;flex-direction:column;gap:1rem}
+.prod-card{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.1);
+  transition:all .3s;cursor:pointer}
+.prod-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.prod-card.open .pc-body{display:block}
+
+.pc-header{padding:1rem 1.2rem;display:flex;align-items:center;gap:1rem}
+.pc-num{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;
+  width:50px;height:50px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.2)}
+.pc-emoji{font-size:2.2rem;flex-shrink:0}
+.pc-info{flex:1}
+.pc-mois{font-size:.65rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+.pc-titre{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;margin:.1rem 0}
+.pc-produit{font-size:.82rem;opacity:.8}
+.pc-prix{text-align:right;flex-shrink:0}
+.pc-prix-val{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--g);font-weight:900}
+.pc-marge{font-size:.72rem;color:#81C784;margin-top:.2rem}
+.pc-toggle{font-size:.8rem;opacity:.5;margin-left:.5rem;transition:.2s}
+.prod-card.open .pc-toggle{transform:rotate(180deg)}
+
+.pc-body{display:none;padding:0 1.2rem 1.2rem;border-top:1px solid rgba(255,255,255,.1);padding-top:1rem}
+
+.info-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:.9rem}
+.ir-box{background:rgba(255,255,255,.06);border-radius:10px;padding:.7rem .9rem;border:1px solid rgba(255,255,255,.08)}
+.ir-label{font-size:.62rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;opacity:.6;margin-bottom:.3rem}
+.ir-value{font-size:.85rem;font-weight:700}
+
+.process-box{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);
+  border-radius:10px;padding:.9rem 1rem;margin-bottom:.9rem}
+.pb-title{font-size:.68rem;font-weight:900;color:var(--g);letter-spacing:.08em;margin-bottom:.6rem}
+.pb-steps{display:flex;flex-direction:column;gap:.4rem}
+.pb-step{display:flex;align-items:flex-start;gap:.6rem;font-size:.82rem}
+.pb-step-num{width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.3);
+  display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900;
+  color:var(--g);flex-shrink:0;margin-top:.1rem}
+
+.script-box{background:rgba(91,45,142,.2);border-left:4px solid var(--v);
+  border-radius:0 10px 10px 0;padding:.8rem 1rem;margin-bottom:.9rem}
+.sb-label{font-size:.62rem;font-weight:900;color:#C9A4FF;letter-spacing:.08em;margin-bottom:.4rem}
+.sb-text{font-size:.82rem;color:#E0D0FF;font-style:italic;line-height:1.7}
+
+.platform-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.plat-badge{padding:.3rem .7rem;border-radius:20px;font-size:.72rem;font-weight:800;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#ddd}
+
+/* TIMELINE BOTTOM */
+.timeline-section{margin-top:2rem;background:rgba(91,45,142,.15);border:1px solid rgba(201,168,76,.2);
+  border-radius:16px;padding:1.5rem}
+.tl-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--g);margin-bottom:1rem;text-align:center}
+.tl-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem}
+@media(max-width:600px){.tl-grid{grid-template-columns:repeat(2,1fr)}}
+.tl-item{background:rgba(255,255,255,.05);border-radius:10px;padding:.6rem;text-align:center;
+  border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:.2s}
+.tl-item:hover{background:rgba(91,45,142,.3);border-color:var(--v)}
+.tl-emoji{font-size:1.4rem;margin-bottom:.2rem}
+.tl-mois{font-size:.62rem;font-weight:900;color:var(--muted)}
+.tl-prod{font-size:.68rem;color:var(--g);font-weight:700;margin-top:.1rem}
+
+.footer{text-align:center;padding:2rem;color:var(--muted);font-size:.75rem;position:relative;z-index:10}
+.footer span{color:var(--g)}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="header">
+  <div style="font-size:.72rem;font-weight:900;letter-spacing:.1em;color:var(--g);margin-bottom:.5rem">⚔️ VIVACOEUR IA — PROGRAMME OFFICIEL</div>
+  <h1>Les 10 Produits du Royaume</h1>
+  <p>Chaque mois — un personnage créé · un produit physique vendu · un artefact gagné</p>
+</div>
+
+<div class="container">
+
+  <!-- TOTAUX -->
+  <div class="totals">
+    <div class="total-card">
+      <div class="tc-num">10</div>
+      <div class="tc-label">Produits physiques créés</div>
+    </div>
+    <div class="total-card">
+      <div class="tc-num">555$–810$</div>
+      <div class="tc-label">Valeur totale de la collection</div>
+    </div>
+    <div class="total-card">
+      <div class="tc-num">300$–450$</div>
+      <div class="tc-label">Marge totale estimée</div>
+    </div>
+  </div>
+
+  <!-- PRODUITS -->
+  <div class="products-list" id="products-list"></div>
+
+  <!-- TIMELINE -->
+  <div class="timeline-section">
+    <div class="tl-title">🗺️ La Collection Complète du Royaume</div>
+    <div class="tl-grid" id="tl-grid"></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  ⚔️ <span>ViVaCoeur IA</span> · Créé par Denise Lévesque · Personnage Lunaria par <span>Trinity Lévesque</span>
+</div>
+
+<script>
+const PRODUITS = [
+  {
+    num:1, emoji:'👕', monde:"L'Éveil", couleur:'#5B2D8E',
+    produit:'Chandail / T-shirt Premium', produit_emoji:'👕',
+    prix:'45$ – 65$', marge:'25$ – 35$',
+    plateforme_cout:'12-18$',
+    pourquoi:"Le t-shirt est l'incontournable du print-on-demand. Tout le monde en achète et il se renouvelle souvent. Parfait pour porter son identité entrepreneuriale partout.",
+    script:"« Votre premier artefact physique — votre chandail avec votre personnage. Quand vous le portez, vous portez votre identité d'entrepreneur. Vous devenez votre propre marque ambulante. »",
+    steps:["Créer son personnage avec ARTISIA (agent IA)","Générer l'image avec Midjourney ou DALL-E","Déposer le design sur Printify — choisir le t-shirt premium","Connecter à sa boutique Shopify","Mettre en vente — premier produit actif !"],
+    plateformes:['Printify ✅','Printful ✅','TPOP ✅'],
+    age_jeune:"Style oversized ou streetwear — tendance auprès des 17-30 ans.",
+    age_aine:"Coupe classique et confortable — qualité premium pour 55-65 ans."
+  },
+  {
+    num:2, emoji:'🧢', monde:"La Forge", couleur:'#1565C0',
+    produit:'Casquette Brodée Premium', produit_emoji:'🧢',
+    prix:'35$ – 50$', marge:'20$ – 28$',
+    plateforme_cout:'10-16$',
+    pourquoi:"La casquette brodée se distingue des autres produits imprimés — la broderie donne un look premium et professionnel. Accessoire universel porté par tous les âges.",
+    script:"« Votre deuxième artefact — votre casquette. La broderie de votre personnage, c'est de l'art que vous portez sur la tête. Un symbole de courage visible partout où vous allez. »",
+    steps:["Affiner son personnage — version broderie (lignes simples et nettes)","Adapter le design pour la broderie — couleurs limitées à 6-8","Déposer sur Printify — section casquettes brodées","Configurer dans Shopify avec photos lifestyle","Vendre — marché cible : fans de streetwear et professionnels"],
+    plateformes:['Printify ✅','Printful ✅','Gelato ✅'],
+    age_jeune:"Design sportif ou gaming — porté tous les jours.",
+    age_aine:"Design élégant et sobre — accessoire de tous les jours."
+  },
+  {
+    num:3, emoji:'🏖️', monde:"La Maîtrise", couleur:'#00695C',
+    produit:'Serviette de Plage Grande Taille', produit_emoji:'🏖️',
+    prix:'55$ – 75$', marge:'30$ – 40$',
+    plateforme_cout:'18-25$',
+    pourquoi:"La serviette de plage est un produit saisonnier à forte valeur. Grandes dimensions = grande surface pour le personnage. Cadeau idéal — forte valeur perçue.",
+    script:"« Votre troisième artefact — la serviette de plage. Elle symbolise quelque chose de puissant : vous prenez de la place. Vous vous étendez dans le monde. Votre marque est grande maintenant. »",
+    steps:["Créer son 3e personnage — version été et couleurs vives","Adapter le design en format horizontal grand format","Commander sur Printify — serviette sublimée grande taille","Prix de vente recommandé : 65-70$","Cibler la saison estivale pour les ventes maximales"],
+    plateformes:['Printify ✅','Printful ✅','Gooten ✅'],
+    age_jeune:"Design coloré et énergique — parfait pour les festivals et plages.",
+    age_aine:"Design plus classique — cadeau parfait pour la famille."
+  },
+  {
+    num:4, emoji:'🕯️', monde:"Les Alliances", couleur:'#1B5E20',
+    produit:'Chandelle Personnalisée avec Étiquette', produit_emoji:'🕯️',
+    prix:'25$ – 40$', marge:'15$ – 25$',
+    plateforme_cout:'8-15$',
+    pourquoi:"La chandelle est un produit de niche à très haute valeur perçue. L'étiquette personnalisée avec le personnage crée un produit unique et mémorable. Parfait comme cadeau.",
+    script:"« Votre quatrième artefact — la chandelle. Elle illumine. Elle attire. Elle réchauffe. Comme votre marque attire vos clients vers vous. Votre personnage sur cette chandelle, c'est votre lumière dans le monde. »",
+    steps:["Créer l'étiquette avec son personnage — format vertical","Choisir son parfum et sa taille sur Printify ou fournisseur local","Option locale : acheter des chandelles vierges + imprimer étiquettes","Prix de vente : 28-35$ pour une chandelle de qualité","Excellent produit de cadeau — cibler fêtes et événements"],
+    plateformes:['Printify ✅','Fournisseur local NB/QC 💡','Faire soi-même 💡'],
+    age_jeune:"Parfums tendance — eucalyptus, vanille, agrumes.",
+    age_aine:"Parfums classiques — lavande, rose, pin."
+  },
+  {
+    num:5, emoji:'🧥', monde:"Les Portails", couleur:'#B71C1C',
+    produit:'Sweat à Capuche (Hoodie) Premium', produit_emoji:'🧥',
+    prix:'75$ – 100$', marge:'40$ – 55$',
+    plateforme_cout:'28-38$',
+    pourquoi:"Le hoodie est le produit print-on-demand le plus rentable en termes de marge absolue. Universellement aimé, porté partout, toute l'année. Marché énorme.",
+    script:"« Votre cinquième artefact — le hoodie. Le vêtement le plus confortable et le plus porté de notre époque. Votre personnage dessus, c'est une déclaration : je suis confortable dans mon succès. »",
+    steps:["Choisir son 5e personnage — version grande — pour la surface du hoodie","Design en grand format centré sur le devant","Choisir coton bio ou polyester recyclé pour valeur premium","Prix de vente : 80-90$ justifié par la qualité","Excellent bestseller — réapprovisionner régulièrement"],
+    plateformes:['Printify ✅','Printful ✅','TPOP (éco) ✅'],
+    age_jeune:"Hoodie oversized — tendance streetwear.",
+    age_aine:"Hoodie classique — coupe comfortable et chaude."
+  },
+  {
+    num:6, emoji:'🛋️', monde:"Les Cristaux", couleur:'#006064',
+    produit:'Couverture / Plaid Premium', produit_emoji:'🛋️',
+    prix:'65$ – 90$', marge:'35$ – 50$',
+    plateforme_cout:'25-40$',
+    pourquoi:"La couverture/plaid est un produit déco haut de gamme à très haute valeur perçue. Grande surface = personnage impressionnant. Cadeau parfait pour toutes les occasions.",
+    script:"« Votre sixième artefact — la couverture. Elle enveloppe. Elle protège. Elle apporte la clarté et le confort. Comme vos systèmes d'organisation enveloppent et protègent votre entreprise. »",
+    steps:["Créer son 6e personnage en version grand format — détails fins","Design sublimé sur toute la surface de la couverture","Choisir matière sherpa ou polaire pour valeur premium","Prix de vente : 70-85$ — excellent cadeau de Noël","Marketing automne/hiver — saison haute pour les ventes"],
+    plateformes:['Printify ✅','Printful ✅','Gelato ✅'],
+    age_jeune:"Design artistique et coloré — décoration chambre.",
+    age_aine:"Design chaleureux et élégant — cadeau familial parfait."
+  },
+  {
+    num:7, emoji:'🎒', monde:"Les Ombres", couleur:'#37474F',
+    produit:'Sac à Dos Premium Personnalisé', produit_emoji:'🎒',
+    prix:'70$ – 95$', marge:'38$ – 52$',
+    plateforme_cout:'28-40$',
+    pourquoi:"Le sac à dos est un produit utilitaire premium avec une très longue durée de vie. Vu partout — école, travail, voyages. Excellente visibilité pour la marque personnage.",
+    script:"« Votre septième artefact — le sac à dos. Vous avez traversé les ombres. Vous portez maintenant votre bagage avec fierté. Votre personnage sur ce sac, c'est votre victoire que vous portez partout. »",
+    steps:["Personnage 7 — version résiliente — couleurs sombres et puissantes","Design brodé ou imprimé sur le devant du sac","Choisir sac avec compartiments — valeur pratique élevée","Prix : 75-85$ — justifié par la qualité et l'utilité","Cibler étudiants, travailleurs, voyageurs"],
+    plateformes:['Printify ✅','Printful ✅','Redbubble ✅'],
+    age_jeune:"Sac étudiant ou gaming — multiples compartiments.",
+    age_aine:"Sac professionnel ou voyage — pratique et élégant."
+  },
+  {
+    num:8, emoji:'🖼️', monde:"Les Étoiles", couleur:'#1A237E',
+    produit:'Poster / Art Mural Premium Encadré', produit_emoji:'🖼️',
+    prix:'55$ – 85$', marge:'30$ – 48$',
+    plateforme_cout:'20-32$',
+    pourquoi:"L'art mural personnalisé est en forte croissance. Produit décoratif haut de gamme. Le personnage en format grand art devient une véritable oeuvre d'art. Marché en expansion.",
+    script:"« Votre huitième artefact — votre art mural. Votre personnage devient une oeuvre. Quelque chose qu'on accroche dans sa maison, dans son bureau. La preuve que vous avez une vision qui mérite d'être célébrée. »",
+    steps:["Personnage 8 — version artistique épique — haute résolution","Format carré ou portrait — 30x40cm ou 50x70cm","Impression sur papier premium ou canvas","Option encadrée pour valeur ajoutée","Cibler décoration bureau, salon — marché home office en croissance"],
+    plateformes:['Printify ✅','Printful ✅','TPOP ✅','Gelato ✅'],
+    age_jeune:"Style illustration moderne — décoration chambre/bureau.",
+    age_aine:"Style classique élégant — décoration salon ou bureau professionnel."
+  },
+  {
+    num:9, emoji:'📱', monde:"Les Titans", couleur:'#4E342E',
+    produit:'Coque Téléphone + Tote Bag Duo', produit_emoji:'📱',
+    prix:'35$ – 55$', marge:'20$ – 32$',
+    plateforme_cout:'12-20$',
+    pourquoi:"Duo stratégique — deux produits complémentaires vendus ensemble. La coque téléphone est un des produits les plus vendus sur Etsy et Shopify. Le tote bag est écologique et tendance.",
+    script:"« Votre neuvième artefact — la coque et le sac. Les Titans portent leurs outils avec style. Votre téléphone protégé par votre personnage. Votre sac qui porte votre marque. L'IA et vous — ensemble. »",
+    steps:["Personnage 9 — version technologique — cyberpunk ou futuriste","Adapter en format rond pour la coque + carré pour le tote bag","Créer un pack duo — coque + tote bag = combo gagnant","Prix du combo : 45-55$ — valeur perçue élevée","Meilleur vendeur pour les cadeaux de Noël"],
+    plateformes:['Printify ✅','Printful ✅','Redbubble ✅'],
+    age_jeune:"Coque ultra-slim tendance — personnage gaming ou fantastique.",
+    age_aine:"Coque robuste + tote bag pratique — combo cadeau idéal."
+  },
+  {
+    num:10, emoji:'🏆', monde:"Le Trône", couleur:'#C9A84C',
+    produit:'Toile Canvas Grand Format — Oeuvre Finale', produit_emoji:'🏆',
+    prix:'95$ – 150$', marge:'55$ – 90$',
+    plateforme_cout:'35-55$',
+    pourquoi:"La toile canvas est le produit le plus premium du programme. Grande surface, impression artistique, montée sur châssis. C'est l'oeuvre finale — le couronnement physique de 10 mois de création.",
+    script:"« Votre dixième et dernier artefact — votre toile. Votre personnage final. En grand. Encadré. Prêt à être accroché. Ce n'est pas juste un produit. C'est votre Royaume physique. C'est la preuve de tout ce que vous avez créé. »",
+    steps:["Personnage final — la version la plus épique, la plus puissante","Résolution maximale — au moins 300 DPI pour impression grand format","Toile canvas 50x70 ou 60x80cm — montée sur châssis en bois","Prix de vente : 110-130$ — produit premium justifié","Cérémonie de couronnement — chaque élève présente sa toile en direct sur Zoom"],
+    plateformes:['Printify ✅','Printful ✅','Gelato ✅','Imprimeur local NB/QC 💡'],
+    age_jeune:"Style épique et spectaculaire — oeuvre d'art moderne.",
+    age_aine:"Style élégant et intemporel — héritage familial précieux."
+  }
+];
+
+function renderStars() {
+  const s = document.getElementById('stars');
+  for(let i=0;i<100;i++){
+    const el=document.createElement('div');
+    el.className='star';
+    const sz=Math.random()*2.5+1;
+    el.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
+    s.appendChild(el);
+  }
+}
+
+function renderProducts() {
+  const list = document.getElementById('products-list');
+  const tl = document.getElementById('tl-grid');
+
+  PRODUITS.forEach(p => {
+    // Timeline
+    const ti = document.createElement('div');
+    ti.className = 'tl-item';
+    ti.onclick = () => { scrollToProd(p.num); };
+    ti.innerHTML = `<div class="tl-emoji">${p.emoji}</div><div class="tl-mois">Mois ${p.num}</div><div class="tl-prod">${p.produit.split('/')[0].split('(')[0].trim()}</div>`;
+    tl.appendChild(ti);
+
+    // Product card
+    const card = document.createElement('div');
+    card.className = 'prod-card';
+    card.id = `prod-${p.num}`;
+    card.style.background = `linear-gradient(135deg,${p.couleur}33,${p.couleur}11)`;
+    card.innerHTML = `
+      <div class="pc-header" onclick="toggleProd(${p.num})">
+        <div class="pc-num" style="background:${p.couleur}33;border-color:${p.couleur};color:${p.couleur}">${p.num}</div>
+        <div class="pc-emoji">${p.produit_emoji}</div>
+        <div class="pc-info">
+          <div class="pc-mois" style="color:${p.couleur}99">Mois ${p.num} — ${p.monde}</div>
+          <div class="pc-titre">${p.produit}</div>
+        </div>
+        <div class="pc-prix">
+          <div class="pc-prix-val">${p.prix}</div>
+          <div class="pc-marge">Marge : ${p.marge}</div>
+        </div>
+        <div class="pc-toggle">▼</div>
+      </div>
+      <div class="pc-body">
+        <div class="info-row">
+          <div class="ir-box">
+            <div class="ir-label">💰 Prix de vente</div>
+            <div class="ir-value" style="color:${p.couleur}">${p.prix}</div>
+          </div>
+          <div class="ir-box">
+            <div class="ir-label">📈 Marge estimée</div>
+            <div class="ir-value" style="color:#81C784">${p.marge}</div>
+          </div>
+          <div class="ir-box">
+            <div class="ir-label">🏭 Coût plateforme</div>
+            <div class="ir-value" style="color:#FFB74D">${p.plateforme_cout}</div>
+          </div>
+        </div>
+        <div class="script-box">
+          <div class="sb-label">🎤 PAROLES DE LA GARDIENNE</div>
+          <div class="sb-text">${p.script}</div>
+        </div>
+        <div class="process-box">
+          <div class="pb-title">⚡ PROCESSUS DE CRÉATION — 5 ÉTAPES</div>
+          <div class="pb-steps">
+            ${p.steps.map((s,i)=>`<div class="pb-step"><div class="pb-step-num">${i+1}</div><div>${s}</div></div>`).join('')}
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.9rem">
+          <div class="ir-box">
+            <div class="ir-label">💙 17-30 ans</div>
+            <div style="font-size:.78rem;margin-top:.2rem;color:#90CAF9">${p.age_jeune}</div>
+          </div>
+          <div class="ir-box">
+            <div class="ir-label">💛 55-65 ans</div>
+            <div style="font-size:.78rem;margin-top:.2rem;color:#FFF176">${p.age_aine}</div>
+          </div>
+        </div>
+        <div class="ir-label" style="margin-bottom:.4rem">🛒 PLATEFORMES RECOMMANDÉES</div>
+        <div class="platform-row">
+          ${p.plateformes.map(pl=>`<span class="plat-badge">${pl}</span>`).join('')}
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+function toggleProd(num) {
+  document.getElementById(`prod-${num}`)?.classList.toggle('open');
+}
+function scrollToProd(num) {
+  const el = document.getElementById(`prod-${num}`);
+  if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); el.classList.add('open'); }
+}
+
+renderStars();
+renderProducts();
+setTimeout(()=>toggleProd(1),500);
+</script>
+</body>
+</html>

@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViVaCoeur IA — Kit Marketing Lancement</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --v:#5B2D8E;--vd:#3E1E70;--vl:#EDE7F6;--vll:#F8F5FF;
+  --g:#C9A84C;--gl:#FFF8E7;--gd:#7B5A00;
+  --bg:#F5F3FA;--card:#fff;--text:#1A1A2E;--muted:#7B7B9A;--bdr:#E0D8F0;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
+
+.header{background:linear-gradient(135deg,var(--vd),var(--v),#8B4FBF);
+  padding:1.5rem;text-align:center;color:#fff}
+.header h1{font-family:'Cinzel',serif;font-size:1.4rem;color:var(--g);margin-bottom:.3rem}
+.header p{font-size:.82rem;opacity:.8}
+.urgent{background:#B71C1C;color:#fff;padding:.5rem 1rem;font-size:.8rem;font-weight:900;
+  text-align:center;letter-spacing:.05em}
+
+.container{max-width:900px;margin:0 auto;padding:1.5rem}
+
+/* TABS */
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.tab{padding:.5rem 1rem;border-radius:20px;border:2px solid var(--bdr);
+  background:#fff;cursor:pointer;font-size:.78rem;font-weight:800;
+  color:var(--muted);font-family:'Nunito',sans-serif;transition:.2s}
+.tab.active,.tab:hover{background:var(--v);color:#fff;border-color:var(--v)}
+
+.panel{display:none}.panel.active{display:block}
+
+/* POST CARD */
+.post-card{background:var(--card);border-radius:14px;border:1px solid var(--bdr);
+  margin-bottom:1rem;overflow:hidden;box-shadow:0 4px 16px rgba(91,45,142,.08)}
+.pc-header{padding:.8rem 1rem;display:flex;align-items:center;gap:.7rem;
+  border-bottom:2px solid var(--vll)}
+.pc-platform{padding:.25rem .6rem;border-radius:20px;font-size:.68rem;font-weight:900;color:#fff}
+.pc-type{font-size:.72rem;color:var(--muted);margin-left:auto}
+.pc-copy{padding:.3rem .7rem;border-radius:7px;background:var(--vl);border:none;
+  cursor:pointer;font-size:.72rem;font-weight:800;color:var(--v);
+  font-family:'Nunito',sans-serif;transition:.2s}
+.pc-copy:hover{background:var(--v);color:#fff}
+.pc-copy.copied{background:#2E7D32;color:#fff}
+
+.pc-body{padding:1rem}
+.post-text{background:var(--vll);border-radius:10px;padding:.9rem 1rem;
+  font-size:.85rem;line-height:1.8;color:var(--text);white-space:pre-wrap;
+  border-left:4px solid var(--v)}
+.post-hashtags{margin-top:.6rem;font-size:.75rem;color:var(--v);font-weight:700}
+.post-note{margin-top:.6rem;font-size:.72rem;color:var(--muted);font-style:italic;
+  background:#f8f8f8;padding:.4rem .6rem;border-radius:6px}
+
+/* WHERE TO POST */
+.where-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem;margin-bottom:1rem}
+.where-card{background:var(--card);border-radius:12px;border:1px solid var(--bdr);padding:1rem;
+  box-shadow:0 2px 8px rgba(91,45,142,.06)}
+.wc-platform{font-size:1.2rem;margin-bottom:.3rem}
+.wc-name{font-weight:900;color:var(--v);font-size:.88rem;margin-bottom:.4rem}
+.wc-tip{font-size:.75rem;color:var(--muted);line-height:1.5}
+.wc-urgence{font-size:.7rem;font-weight:900;padding:.2rem .5rem;border-radius:6px;
+  display:inline-block;margin-top:.4rem}
+
+/* CHECKLIST */
+.checklist{display:flex;flex-direction:column;gap:.5rem}
+.check-item{display:flex;align-items:flex-start;gap:.7rem;padding:.7rem .9rem;
+  background:var(--card);border-radius:10px;border:1px solid var(--bdr);cursor:pointer}
+.check-item.done{background:#E8F5E9;border-color:#2E7D32;opacity:.7}
+.check-box{width:22px;height:22px;border-radius:5px;border:2px solid var(--bdr);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;transition:.2s;margin-top:.1rem}
+.check-item.done .check-box{background:#2E7D32;border-color:#2E7D32;color:#fff}
+.check-text{flex:1}
+.check-title{font-weight:800;font-size:.85rem;color:var(--text)}
+.check-sub{font-size:.72rem;color:var(--muted);margin-top:.15rem}
+.check-time{font-size:.68rem;font-weight:900;color:var(--v);background:var(--vl);
+  padding:.15rem .4rem;border-radius:5px;white-space:nowrap;flex-shrink:0}
+
+/* TIMER */
+.timer-section{background:linear-gradient(135deg,#B71C1C,#7B0000);
+  border-radius:14px;padding:1.2rem;color:#fff;text-align:center;margin-bottom:1.5rem}
+.timer-title{font-family:'Cinzel',serif;font-size:1rem;color:#FFD54F;margin-bottom:.5rem}
+.timer-display{font-family:'Cinzel',serif;font-size:2.5rem;font-weight:900;
+  letter-spacing:.1em;color:#fff;margin:.5rem 0}
+.timer-sub{font-size:.75rem;opacity:.8}
+
+/* SCRIPT TÉLÉPHONE */
+.script-box{background:var(--vll);border-radius:10px;padding:1rem;
+  border-left:4px solid var(--v);margin-bottom:.8rem}
+.sb-label{font-size:.68rem;font-weight:900;color:var(--v);letter-spacing:.08em;margin-bottom:.4rem}
+.sb-text{font-size:.85rem;line-height:1.8;color:var(--text);white-space:pre-wrap}
+
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--vd);color:#fff;
+  padding:.6rem 1rem;border-radius:10px;font-size:.8rem;font-weight:700;z-index:9999;
+  transform:translateY(80px);opacity:0;transition:.3s;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<div class="urgent">🚨 OBJECTIF : 30 ÉLÈVES INSCRITS AVANT LUNDI MATIN — AUJOURD'HUI ON PUBLIE TOUT !</div>
+
+<div class="header">
+  <h1>⚔️ ViVaCoeur IA — Kit Marketing Lancement</h1>
+  <p>Publicités organiques · Zéro budget · Maximum d'impact · Prêt à copier-coller</p>
+</div>
+
+<div class="container">
+
+  <!-- TIMER -->
+  <div class="timer-section">
+    <div class="timer-title">⏰ COMPTE À REBOURS AVANT LUNDI</div>
+    <div class="timer-display" id="timer">--:--:--</div>
+    <div class="timer-sub">Il vous reste ce temps pour remplir votre classe de 30 élèves</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('facebook')">📘 Facebook</button>
+    <button class="tab" onclick="showTab('instagram')">📸 Instagram</button>
+    <button class="tab" onclick="showTab('linkedin')">💼 LinkedIn</button>
+    <button class="tab" onclick="showTab('groupes')">👥 Groupes FB</button>
+    <button class="tab" onclick="showTab('youtube')">▶️ YouTube</button>
+    <button class="tab" onclick="showTab('messagerie')">💬 Messages privés</button>
+    <button class="tab" onclick="showTab('ou-publier')">🗺️ Où publier</button>
+    <button class="tab" onclick="showTab('checklist')">✅ Checklist lundi</button>
+  </div>
+
+  <!-- ══ FACEBOOK ══ -->
+  <div class="panel active" id="panel-facebook">
+
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:#1877F2">📘 Facebook</span>
+        <span style="font-weight:800;font-size:.82rem;color:var(--v)">POST #1 — Émotionnel · Le plus puissant</span>
+        <span class="pc-type">Publier MAINTENANT</span>
+        <button class="pc-copy" onclick="copyPost(this,'post-fb1')">📋 Copier</button>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" id="post-fb1">⚔️ Et si lundi matin, vous commenciez à construire votre empire ?
+
+Pas demain. Pas l'année prochaine.
+Lundi matin. 9h00. Sur Zoom.
+
+Je m'appelle Denise Levesque.
+Depuis 15 ans, je travaille dans les soins à domicile.
+Et j'ai décidé de créer quelque chose que personne n'a encore fait.
+
+Un programme d'entrepreneuriat où vous ne lisez pas des livres.
+Vous créez une vraie entreprise.
+Vous faites vos premières vraies ventes dès la semaine 1.
+Vous obtenez un vrai numéro d'entreprise.
+
+En 10 mois — vous allez créer <mark style="background:#FFE500;padding:0 3px;border-radius:3px;font-weight:900">10 entreprises</mark>.
+Chaque mois — un nouveau monde à conquérir.
+Chaque mois — un produit physique avec votre personnage dessus.
+
+🐺 Mois 1 : Votre chandail avec votre personnage créé par l'IA
+🧢 Mois 2 : Votre casquette
+🏆 Mois 10 : Votre toile canvas — votre œuvre finale
+
+Le programme s'appelle ViVaCoeur IA.
+Et il commence LUNDI.
+
+120$ d'inscription + 40$/semaine.
+Moins cher qu'un café par jour.
+
+30 places. Maximum.
+Combien reste-t-il ? Écrivez-moi en message privé et je vous réponds dans les 10 minutes.
+
+👇 Taguez quelqu'un qui a besoin de ça dans sa vie.</div>
+        <div class="post-hashtags">#ViVaCoeurIA #Entrepreneuriat #BusinessIA #NouveauBrunswick #Quebec #Formation #ApprendreIA</div>
+        <div class="post-note">💡 Ajoutez une photo de vous souriante OU l'image de votre ange aux cheveux violets</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:#1877F2">📘 Facebook</span>
+        <span style="font-weight:800;font-size:.82rem;color:var(--v)">POST #2 — Choc des prix</span>
+        <span class="pc-type">Publier demain matin</span>
+        <button class="pc-copy" onclick="copyPost(this,'post-fb2')">📋 Copier</button>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" id="post-fb2">💰 Savez-vous combien coûte un programme d'entrepreneuriat normal ?
+
+❌ École de commerce : 15 000$ à 40 000$
+❌ Coach d'affaires privé : 500$ à 2 000$/mois
+❌ Formation en ligne générique : 997$ à 3 000$
+
+✅ ViVaCoeur IA : 120$ + 40$/semaine = 1 720$ au total
+
+Et dans notre programme — vous ne payez pas juste pour apprendre.
+Vous payez pour CRÉER.
+
+En 10 mois :
+→ <mark style="background:#FFE500;padding:0 3px;border-radius:3px;font-weight:900">10 vraies entreprises créées</mark>
+→ Vos premières vraies ventes dès la semaine 1
+→ Votre boutique Shopify active et fonctionnelle dès le mois 1
+→ 10 produits physiques avec votre personnage IA
+→ 1 numéro d'entreprise officiel
+
+Le tout guidé par l'intelligence artificielle.
+Et par moi — Denise Levesque — votre Gardienne du Royaume.
+
+Lancement LUNDI. 30 places. Presque complet.
+
+📩 Écrivez-moi MAINTENANT pour réserver votre place.</div>
+        <div class="post-hashtags">#ViVaCoeurIA #FormationEntreprenariat #IA #PetiteEntreprise #Canada #Francophone</div>
+        <div class="post-note">💡 Publiez entre 7h00 et 9h00 du matin pour maximum de visibilité</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:#1877F2">📘 Facebook</span>
+        <span style="font-weight:800;font-size:.82rem;color:var(--v)">POST #3 — Urgence finale</span>
+        <span class="pc-type">Publier dimanche soir</span>
+        <button class="pc-copy" onclick="copyPost(this,'post-fb3')">📋 Copier</button>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" id="post-fb3">🚨 DERNIÈRE CHANCE — Lancement demain matin 9h00
+
+Il reste quelques places dans le programme ViVaCoeur IA.
+
+Demain matin à 9h00 sur Zoom — 30 héros commencent leur aventure entrepreneuriale.
+
+En 10 mois — <mark style="background:#FFE500;padding:0 3px;border-radius:3px;font-weight:900">10 entreprises créées</mark>.
+Vos premières vraies ventes dès la semaine 1.
+Votre boutique Shopify active et fonctionnelle.
+Pas simulé. Réel.
+
+Est-ce que vous en faites partie ?
+
+Ce soir — si vous hésitez encore — posez-vous UNE question :
+"Dans 10 mois, est-ce que je veux avoir essayé... ou pas ?"
+
+La réponse vous appartient.
+Le lien d'inscription aussi.
+
+📩 Message privé pour vous inscrire ce soir.
+💳 120$ d'inscription + 40$/semaine
+📅 Lundi au vendredi — 9h00 à 15h30
+💻 Sur Zoom — de chez vous
+
+À demain matin. ⚔️</div>
+        <div class="post-hashtags">#ViVaCoeurIA #DernièreChance #Lancement #Entrepreneuriat #IA</div>
+        <div class="post-note">💡 Publiez dimanche entre 19h00 et 21h00 — les gens sont sur leur téléphone</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INSTAGRAM ══ -->
+  <div class="panel" id="panel-instagram">
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:linear-gradient(135deg,#E1306C,#833AB4)">📸 Instagram</span>
+        <span style="font-weight:800;font-size:.82rem;color:var(--v)">POST #1 — Story + Reel</span>
+        <button class="pc-copy" onclick="copyPost(this,'post-ig1')">📋 Copier</button>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" id="post-ig1">⚔️ POV : Tu commences à construire ton empire lundi matin
+
+🐺 Mois 1 — Tu crées ton 1er personnage IA
+👕 Tu le mets sur un chandail
+💰 Tu fais tes premières vraies ventes dès la semaine 1
+
+Et ça, c'est juste le début.
+
+10 mois.
+<mark style="background:#FFE500;padding:0 3px;border-radius:3px;font-weight:900">10 entreprises.</mark>
+10 produits physiques.
+1 vrai numéro d'entreprise.
+
+Tout ça guidé par l'IA + une vraie mentore qui a 15 ans d'expérience.
+
+ViVaCoeur IA — Le programme entrepreneurial qui change des vies.
+
+Lancement LUNDI. Quelques places restantes.
+🔗 Lien dans ma bio pour s'inscrire.</div>
+        <div class="post-hashtags">#ViVaCoeurIA #Entrepreneuriat #BusinessIA #Formation #Canada #Francophone #ApprendreEnLigne #StartupLife #PersonnageIA #WorldOfWarcraft</div>
+        <div class="post-note">💡 Utilisez l'image de votre ange violet OU la magicienne de Trinity comme visuel</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:linear-gradient(135deg,#E1306C,#833AB4)">📸 Instagram</span>
+        <span style="font-weight:800;font-size:.82rem;color:var(--v)">STORY — Sondage urgent</span>
+        <button class="pc-copy" onclick="copyPost(this,'post-ig2')">📋 Copier</button>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" id="post-ig2">STORY À CRÉER DANS CANVA :
+
+Fond violet foncé ⚔️
+
+Texte principal :
+"Tu veux lancer ton entreprise ?"
+
+Sondage :
+✅ OUI — je suis prêt(e)
+😅 J'attends encore...
+
+Sous le sondage :
+"Si tu réponds OUI — je t'envoie les détails en DM"
+
+---
+Répondez à chaque OUI en message privé avec le Post #1</div>
+        <div class="post-note">💡 Les stories avec sondages ont 3x plus d'engagement — publiez 3-4 stories par jour</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LINKEDIN ══ -->
+  <div class="panel" id="panel-linkedin">
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:#0A66C2">💼 LinkedIn</span>
+        <span style="font-weight:800;font-size:.82rem;color:var(--v)">POST #1 — Professionnel</span>
+        <button class="pc-copy" onclick="copyPost(this,'post-li1')">📋 Copier</button>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" id="post-li1">Après 15 ans dans les soins à domicile, j'ai créé quelque chose que personne n'avait encore osé faire.
+
+Un programme d'entrepreneuriat immersif où chaque étudiant crée 10 vraies entreprises en 10 mois — guidé par l'intelligence artificielle.
+
+Pas de théorie. Pas de livres. De la vraie action.
+
+Dès la semaine 1 : premières ventes réelles.
+Dès la semaine 3 : boutique Shopify en ligne.
+À la fin du programme : numéro d'entreprise officiel.
+
+Le tout dans un univers gamifié inspiré de World of Warcraft — où chaque étudiant crée son propre personnage IA, le place sur des produits physiques et le vend.
+
+Ce programme s'appelle ViVaCoeur IA.
+Il démarre lundi prochain.
+30 places disponibles.
+
+Si vous connaissez quelqu'un qui cherche à se lancer en affaires — jeune ou moins jeune — partagez ce post.
+
+Parfois, tout ce dont on a besoin c'est d'une porte ouverte au bon moment.
+
+Je suis cette porte. 🚪⚔️
+
+📩 Pour plus d'informations : message privé ou denise@vivacoeur.com</div>
+        <div class="post-note">💡 LinkedIn fonctionne mieux le mardi et mercredi entre 8h-10h · Pas de hashtags en excès</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GROUPES FACEBOOK ══ -->
+  <div class="panel" id="panel-groupes">
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:#1877F2">👥 Groupes Facebook</span>
+        <span style="font-weight:800;font-size:.82rem;color:var(--v)">Message pour groupes — Version courte</span>
+        <button class="pc-copy" onclick="copyPost(this,'post-gr1')">📋 Copier</button>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" id="post-gr1">🔥 Quelqu'un ici veut lancer son entreprise avec l'IA ?
+
+Je lance lundi un programme unique au Canada 🇨🇦
+
+✅ <mark style="background:#FFE500;padding:0 3px;border-radius:3px;font-weight:900">10 entreprises créées en 10 mois</mark>
+✅ Premières vraies ventes dès la semaine 1
+✅ Boutique Shopify active et fonctionnelle dès le mois 1
+✅ Personnage IA personnalisé sur vos produits physiques
+✅ Sur Zoom — de chez vous
+✅ 120$ inscription + 40$/semaine
+
+S'applique aux 17-65 ans · Débutants bienvenus
+
+📩 Message privé pour les détails — je réponds vite !</div>
+        <div class="post-note">💡 Publiez dans ces types de groupes : Entrepreneurs QC/NB · Femmes en affaires · Chercheurs d'emploi · Jeunes entrepreneurs · Groupes de votre région</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:#1877F2">👥 Groupes Facebook</span>
+        <span style="font-weight:800;font-size:.82rem;color:var(--v)">Liste des groupes où publier</span>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" style="font-style:normal">GROUPES FACEBOOK À CIBLER — Cherchez ces termes :
+
+🔍 "Entrepreneurs Nouveau-Brunswick"
+🔍 "Entrepreneurs Québec"
+🔍 "Femmes entrepreneures Canada"
+🔍 "Jeunes entrepreneurs francophones"
+🔍 "Chercheurs d'emploi NB"
+🔍 "Formation en ligne francophone"
+🔍 "Business en ligne Canada"
+🔍 "Grand-Sault communauté"
+🔍 "Edmundston communauté"
+🔍 "Francophonie Canada affaires"
+🔍 "Work from home Canada"
+🔍 "Reconversion professionnelle"
+
+OBJECTIF : Publier dans 10-15 groupes aujourd'hui</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ YOUTUBE ══ -->
+  <div class="panel" id="panel-youtube">
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:#FF0000">▶️ YouTube</span>
+        <span style="font-weight:800;font-size:.82rem;color:var(--v)">Script vidéo courte — 60 secondes</span>
+        <button class="pc-copy" onclick="copyPost(this,'post-yt1')">📋 Copier</button>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" id="post-yt1">SCRIPT VIDÉO 60 SECONDES — À filmer avec votre téléphone
+
+[ Regarder dans la caméra. Sourire. ]
+
+"Est-ce que tu veux lancer ton entreprise — mais tu ne sais pas par où commencer ?"
+
+[ Pause 1 seconde ]
+
+"Moi c'est Denise Levesque. Et lundi matin, j'ouvre les portes d'un programme unique au Canada."
+
+"En 10 mois — tu vas créer 10 vraies entreprises. Avec l'intelligence artificielle comme allié."
+
+"Dès la semaine 1 — tes premières vraies ventes. Dès le mois 1 — ta boutique Shopify active."
+
+"Chaque mois — tu crées ton personnage IA. Tu le mets sur un produit physique. Chandail. Casquette. Hoodie. Toile canvas."
+
+"Ça s'appelle ViVaCoeur IA. Ça coûte 40$ par semaine. Et ça commence LUNDI."
+
+"Lien dans la description pour t'inscrire. 30 places. Il en reste quelques-unes."
+
+[ Sourire. Pointer vers le bas. ]
+
+"À lundi. ⚔️"
+
+"Ça s'appelle ViVaCoeur IA. Ça coûte 40$ par semaine. Et ça commence LUNDI."
+
+"Lien dans la description pour t'inscrire. 30 places. Il en reste quelques-unes."
+
+[ Sourire. Pointer vers le bas. ]
+
+"À lundi. ⚔️"</div>
+        <div class="post-note">💡 Filmez avec votre téléphone — naturel et authentique · Ajoutez vos personnages en overlay · Publiez aussi en Shorts YouTube et Reels Instagram</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MESSAGES PRIVÉS ══ -->
+  <div class="panel" id="panel-messagerie">
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:#25D366">💬 WhatsApp / Messenger</span>
+        <span style="font-weight:800;font-size:.82rem;color:var(--v)">Message personnel — Vos contacts</span>
+        <button class="pc-copy" onclick="copyPost(this,'post-mp1')">📋 Copier</button>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" id="post-mp1">Bonjour [Prénom] 😊
+
+Je t'écris parce que je pense à toi.
+
+Je lance lundi matin mon programme d'entrepreneuriat ViVaCoeur IA.
+
+En 10 mois — on crée 10 vraies entreprises avec l'intelligence artificielle. Premières ventes dès la semaine 1.
+
+Je pense que ça pourrait vraiment te correspondre.
+
+Est-ce que tu veux que je t'envoie les détails ?
+
+À bientôt 💜
+Denise</div>
+        <div class="post-note">💡 Envoyez ce message à 20-30 personnes PERSONNELLEMENT ce soir — pas en groupe — c'est beaucoup plus efficace</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="pc-header">
+        <span class="pc-platform" style="background:#25D366">💬 Réponse quand quelqu'un demande des infos</span>
+        <button class="pc-copy" onclick="copyPost(this,'post-mp2')">📋 Copier</button>
+      </div>
+      <div class="pc-body">
+        <div class="post-text" id="post-mp2">Merci de ton intérêt ! 😊 Voici les détails :
+
+⚔️ VIVACOEUR IA — Programme Entrepreneurial
+
+📅 Début : LUNDI MATIN
+⏰ Horaire : Lundi au vendredi · 9h00 – 15h30
+💻 Format : Sur Zoom — de chez toi
+👥 Groupe : 30 élèves maximum
+
+CE QUE TU VAS CRÉER :
+✅ <mark style="background:#FFE500;padding:0 3px;border-radius:3px;font-weight:900">10 vraies entreprises en 10 mois</mark>
+✅ Tes premières vraies ventes dès la semaine 1
+✅ Ton personnage IA unique chaque mois
+✅ Des produits physiques avec ton personnage
+✅ Une boutique Shopify active et fonctionnelle
+✅ Un numéro d'entreprise officiel
+
+TARIF :
+💳 120$ d'inscription (une fois)
+💰 40$ par semaine ensuite
+📊 Total programme : 1 720$
+
+Pour les personnes de 17 à 65 ans.
+Aucune expérience requise.
+
+Tu veux réserver ta place ?
+Réponds-moi et je t'envoie le lien de paiement ! 🔥</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OÙ PUBLIER ══ -->
+  <div class="panel" id="panel-ou-publier">
+    <div class="where-grid">
+      <div class="where-card">
+        <div class="wc-platform">📘</div>
+        <div class="wc-name">Facebook Personnel</div>
+        <div class="wc-tip">Votre mur personnel · Vos amis partagent · Effet boule de neige</div>
+        <span class="wc-urgence" style="background:#E3F2FD;color:#1565C0">Publier MAINTENANT</span>
+      </div>
+      <div class="where-card">
+        <div class="wc-platform">👥</div>
+        <div class="wc-name">Groupes Facebook</div>
+        <div class="wc-tip">10-15 groupes d'entrepreneurs · Francophone · NB · QC</div>
+        <span class="wc-urgence" style="background:#FFEBEE;color:#B71C1C">Urgent — Aujourd'hui</span>
+      </div>
+      <div class="where-card">
+        <div class="wc-platform">📸</div>
+        <div class="wc-name">Instagram</div>
+        <div class="wc-tip">Post + 3-4 Stories avec sondage · Utiliser vos personnages comme visuels</div>
+        <span class="wc-urgence" style="background:#F3E5F5;color:#6A1B9A">Ce soir</span>
+      </div>
+      <div class="where-card">
+        <div class="wc-platform">💼</div>
+        <div class="wc-name">LinkedIn</div>
+        <div class="wc-tip">Post professionnel · Demandez à vos contacts de partager</div>
+        <span class="wc-urgence" style="background:#E8F5E9;color:#1B5E20">Demain matin 8h</span>
+      </div>
+      <div class="where-card">
+        <div class="wc-platform">💬</div>
+        <div class="wc-name">Messages Privés</div>
+        <div class="wc-tip">20-30 personnes personnellement · WhatsApp · Messenger · SMS</div>
+        <span class="wc-urgence" style="background:#FFEBEE;color:#B71C1C">CE SOIR — Priorité #1</span>
+      </div>
+      <div class="where-card">
+        <div class="wc-platform">▶️</div>
+        <div class="wc-name">YouTube Shorts</div>
+        <div class="wc-tip">Vidéo 60 secondes · Filmée au téléphone · Naturelle et authentique</div>
+        <span class="wc-urgence" style="background:#FFF8E7;color:#7B5A00">Demain</span>
+      </div>
+      <div class="where-card">
+        <div class="wc-platform">📞</div>
+        <div class="wc-name">Téléphone</div>
+        <div class="wc-tip">Appelez vos 10 meilleurs contacts · Une conversation vaut 100 posts</div>
+        <span class="wc-urgence" style="background:#FFEBEE;color:#B71C1C">CE SOIR — Priorité #2</span>
+      </div>
+      <div class="where-card">
+        <div class="wc-platform">📧</div>
+        <div class="wc-name">Email</div>
+        <div class="wc-tip">Envoyez à votre liste de contacts · Sujet : "J'ai pensé à toi"</div>
+        <span class="wc-urgence" style="background:#E3F2FD;color:#1565C0">Demain matin</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CHECKLIST LUNDI ══ -->
+  <div class="panel" id="panel-checklist">
+    <div style="font-family:'Cinzel',serif;font-size:1rem;color:var(--v);margin-bottom:1rem;font-weight:700">
+      ✅ Checklist — Tout faire avant lundi 9h00
+    </div>
+    <div class="checklist" id="checklist">
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Publier Post Facebook #1 (émotionnel)</div>
+          <div class="check-sub">Sur votre mur personnel + demander à des amis de partager</div>
+        </div>
+        <span class="check-time">Maintenant</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Envoyer 20 messages personnels WhatsApp/Messenger</div>
+          <div class="check-sub">Un par un — pas en groupe — beaucoup plus efficace</div>
+        </div>
+        <span class="check-time">Ce soir</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Publier dans 10 groupes Facebook</div>
+          <div class="check-sub">Entrepreneurs NB/QC · Femmes en affaires · Chercheurs d'emploi</div>
+        </div>
+        <span class="check-time">Ce soir</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Publier Story Instagram avec sondage</div>
+          <div class="check-sub">Répondre à chaque OUI en message privé avec les détails</div>
+        </div>
+        <span class="check-time">Ce soir</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Appeler 5-10 personnes directement</div>
+          <div class="check-sub">Une vraie conversation vaut 100 posts — appelez vos meilleurs contacts</div>
+        </div>
+        <span class="check-time">Ce soir</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Publier Post Facebook #2 (choc des prix)</div>
+          <div class="check-sub">Demain matin entre 7h00 et 9h00</div>
+        </div>
+        <span class="check-time">Demain 7h</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Publier sur LinkedIn</div>
+          <div class="check-sub">Post professionnel — demander à votre réseau de partager</div>
+        </div>
+        <span class="check-time">Demain 8h</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Filmer et publier vidéo 60 secondes</div>
+          <div class="check-sub">YouTube Shorts + Instagram Reels + Facebook Vidéo</div>
+        </div>
+        <span class="check-time">Demain</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Configurer Stripe — lien de paiement prêt</div>
+          <div class="check-sub">Produit 120$ inscription + produit 40$/semaine</div>
+        </div>
+        <span class="check-time">Aujourd'hui</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Publier Post urgence finale dimanche soir</div>
+          <div class="check-sub">Entre 19h00 et 21h00 — dernière chance</div>
+        </div>
+        <span class="check-time">Dimanche 19h</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">Préparer le lien Zoom du lundi matin</div>
+          <div class="check-sub">Tester le son et la caméra · Ouvrir Canva Jour 1</div>
+        </div>
+        <span class="check-time">Dimanche</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <div class="check-title">🚨 Lundi 8h30 — Envoyer le lien Zoom à tous les inscrits</div>
+          <div class="check-sub">Message : "Bonjour ! Voici votre lien Zoom pour ce matin 9h00 ⚔️"</div>
+        </div>
+        <span class="check-time">Lundi 8h30</span>
+      </div>
+    </div>
+    <div id="progress-bar" style="margin-top:1rem;background:var(--vll);border-radius:10px;height:12px;overflow:hidden">
+      <div id="progress-fill" style="height:100%;background:linear-gradient(90deg,var(--v),var(--g));border-radius:10px;transition:width .4s;width:0%"></div>
+    </div>
+    <div id="progress-text" style="text-align:center;font-size:.78rem;color:var(--muted);margin-top:.4rem">0 / 12 tâches complétées</div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function copyPost(btn, id) {
+  const text = document.getElementById(id)?.innerText || '';
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent = '✅ Copié !';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 Copier';btn.classList.remove('copied');},2500);
+    toast('📋 Texte copié — prêt à coller !');
+  });
+}
+
+function toggleCheck(item) {
+  item.classList.toggle('done');
+  if(item.classList.contains('done')) item.querySelector('.check-box').textContent='✓';
+  else item.querySelector('.check-box').textContent='';
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = document.querySelectorAll('.check-item').length;
+  const done = document.querySelectorAll('.check-item.done').length;
+  const pct = Math.round((done/total)*100);
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('progress-text').textContent = `${done} / ${total} tâches complétées`;
+  if(done===total) toast('🏆 Tout est prêt pour lundi ! ⚔️');
+}
+
+function toast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// COMPTE À REBOURS VERS LUNDI 9H00
+function updateTimer() {
+  const now = new Date();
+  const next = new Date();
+  const day = now.getDay();
+  const daysUntilMonday = day === 0 ? 1 : (8 - day) % 7 || 7;
+  next.setDate(now.getDate() + (day === 1 && now.getHours() < 9 ? 0 : daysUntilMonday));
+  next.setHours(9,0,0,0);
+  const diff = next - now;
+  if(diff <= 0) { document.getElementById('timer').textContent = "C'EST MAINTENANT ! 🔥"; return; }
+  const h = Math.floor(diff/3600000);
+  const m = Math.floor((diff%3600000)/60000);
+  const s = Math.floor((diff%60000)/1000);
+  document.getElementById('timer').textContent =
+    `${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+}
+setInterval(updateTimer, 1000);
+updateTimer();
+</script>
+</body>
+</html>
